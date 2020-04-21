@@ -55,14 +55,31 @@ class dashboardController extends Controller
         $percentage_rev = $divide_rev * 100;
 
         //Total Transaction Current Year
-        $transaction = Transaction::whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+        $year_transaction = Transaction::whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+
+        //Total Transaction Current Month
+        $month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+        $last_month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+
 
         //Total User
         $user = User::count();
 
+        //Current Average Order Value
+        $average_order = $current_rev / $month_transaction;
+
+        //Last Avergae Order Value
+        $last_average_order = $last_rev / $last_month_transaction;
+        $change_aov = $average_order - $last_average_order;
+        $divide_aov = $change_aov / $last_average_order;
+        $percentage_aov = $divide_aov * 100;
+
+
         return view('home', compact('income'))->with('year_array',$year_array)->with('total_rev',$total_rev)
-            ->with('percentage_rev', $percentage_rev)->with('current_rev',$current_rev)->with('transaction',$transaction)
-            ->with('user',$user);
+            ->with('percentage_rev', $percentage_rev)->with('current_rev',$current_rev)->with('transaction',$year_transaction)
+            ->with('user',$user)->with('average_order',$average_order)->with('percentage_aov',$percentage_aov);
     }
 
     public function revenue(){

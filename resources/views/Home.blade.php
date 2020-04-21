@@ -199,15 +199,15 @@
                                         </div>
                                         <!-- /.description-block -->
                                     </div>
-                                    {{--<!-- /.col -->--}}
-                                    {{--<div class="col-sm-3 col-6">--}}
-                                        {{--<div class="description-block border-right">--}}
-                                            {{--<span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>--}}
-                                            {{--<h5 class="description-header">$10,390.90</h5>--}}
-                                            {{--<span class="description-text">TOTAL COST</span>--}}
-                                        {{--</div>--}}
-                                        {{--<!-- /.description-block -->--}}
-                                    {{--</div>--}}
+                                    <!-- /.col -->
+                                    <div class="col-sm-3 col-6">
+                                        <div class="description-block border-right">
+                                            <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i>{{number_format($percentage_aov,2)}}%</span>
+                                            <h5 class="description-header">Rp. {{number_format($average_order)}}</h5>
+                                            <span class="description-text">Average Order Value</span>
+                                        </div>
+                                        <!-- /.description-block -->
+                                    </div>
                                     {{--<!-- /.col -->--}}
                                     {{--<div class="col-sm-3 col-6">--}}
                                         {{--<div class="description-block border-right">--}}
