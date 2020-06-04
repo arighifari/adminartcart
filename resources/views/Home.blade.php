@@ -35,9 +35,9 @@
                       <!-- small box -->
                       <div class="small-box bg-success">
                         <div class="inner">
-                          <h4>{{$transaction}}</h4>
+                          <h4>{{$count_retention_now}}</h4>
 
-                          <p>Total Transaction</p>
+                          <p>Total Acqusition Now</p>
                         </div>
                         <div class="icon">
                           <i class="ion ion-stats-bars"></i>
@@ -50,9 +50,9 @@
                         <!-- small box -->
                         <div class="small-box bg-warning">
                             <div class="inner">
-                                <h4>{{$user}}</h4>
+                                <h4>{{$count_retention_last}}</h4>
 
-                                <p>User Registrations</p>
+                                <p>Total Acqusitionn last</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-person-add"></i>
@@ -193,7 +193,7 @@
                                 <div class="row">
                                     <div class="col-sm-3 col-6">
                                         <div class="description-block border-right">
-                                            <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> {{number_format($percentage_rev,2)}}%</span>
+                                            <span class="description-percentage text-success"> @if($percentage_aov >= 0)<i class="fas fa-caret-up"></i> @elseif($percentage_aov == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_rev,2)}}%</span>
                                             <h5 class="description-header">Rp. {{number_format($current_rev)}}</h5>
                                             <span class="description-text">TOTAL REVENUE</span>
                                         </div>
@@ -202,7 +202,7 @@
                                     <!-- /.col -->
                                     <div class="col-sm-3 col-6">
                                         <div class="description-block border-right">
-                                            <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i>{{number_format($percentage_aov,2)}}%</span>
+                                            <span class="description-percentage text-danger"> @if($percentage_aov >= 0)<i class="fas fa-caret-up"></i> @elseif($percentage_aov == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_aov,2)}}%</span>
                                             <h5 class="description-header">Rp. {{number_format($average_order)}}</h5>
                                             <span class="description-text">Average Order Value</span>
                                         </div>

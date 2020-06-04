@@ -43,11 +43,11 @@
                 data: {
                     labels: response.months, // The response got from the ajax request containing all month names in the database
                     datasets: [{
-                        label: "Sessions",
+                        label: "Total ",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
-                        pointRadius: 5,
+                        pointRadius: 4,
                         pointBackgroundColor: "rgba(2,117,216,1)",
                         pointBorderColor: "rgba(255,255,255,0.8)",
                         pointHoverRadius: 5,
@@ -74,7 +74,7 @@
                             ticks: {
                                 min: 0,
                                 max: response.max, // The response got from the ajax request containing max limit for y axis
-                                maxTicksLimit: 10
+                                maxTicksLimit: 20
                             },
                             gridLines: {
                                 color: "rgba(0, 0, 0, .125)",

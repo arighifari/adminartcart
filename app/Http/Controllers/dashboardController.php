@@ -6,6 +6,7 @@ use App\Order;
 use App\Transaction;
 use App\User;
 use Carbon\Carbon;
+use function GuzzleHttp\Promise\all;
 use Illuminate\Http\Request;
 
 class dashboardController extends Controller
@@ -34,10 +35,11 @@ class dashboardController extends Controller
         //Percentage Revenue
         $currentmonth = date('m');
         $total_rev = 0;
-        $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->
+        format('Y'))->get();
         foreach ($revenue as $in)
             $total_rev += $in->amount;
-        //
+        //last month
         $revenue_last = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $last_rev = 0;
@@ -60,6 +62,7 @@ class dashboardController extends Controller
         //Total Transaction Current Month
         $month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+        //last month
         $last_month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
 
@@ -76,10 +79,37 @@ class dashboardController extends Controller
         $divide_aov = $change_aov / $last_average_order;
         $percentage_aov = $divide_aov * 100;
 
+        //customer retention
+        //customer retention this month
+        $retention = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $group_retenteion1 = $retention->groupBy('user_id');
+        $new_total = [];
+        foreach ($group_retenteion1 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total[$total]=sizeof($value);
+            }
+
+        }
+        $count_retention_now = count($new_total) ;
+
+        //customer retention last month
+        $retention_last = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+
+        $group_retention2 = $retention_last->groupBy('user_id');
+        $new_total2 = [];
+        foreach ($group_retention2 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total2[$total]=sizeof($value);
+            }
+        }
+        $count_retention_last = count($new_total2) ;
 
         return view('home', compact('income'))->with('year_array',$year_array)->with('total_rev',$total_rev)
             ->with('percentage_rev', $percentage_rev)->with('current_rev',$current_rev)->with('transaction',$year_transaction)
-            ->with('user',$user)->with('average_order',$average_order)->with('percentage_aov',$percentage_aov);
+            ->with('user',$user)->with('average_order',$average_order)->with('percentage_aov',$percentage_aov)->with('count_retention_now',$count_retention_now)
+            ->with('count_retention_last',$count_retention_last);
     }
 
     public function revenue(){
