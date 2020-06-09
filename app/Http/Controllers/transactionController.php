@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Transaction;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +76,8 @@ class transactionController extends Controller
 
     function getMonthlyPostCount( $month ) {
 
-        $monthly_post_count = Transaction::whereMonth( 'created_at', $month )->get()->count();
+        $monthly_post_count = Transaction::whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->whereMonth( 'created_at', $month )
+            ->get()->count();
 
         return $monthly_post_count;
     }
@@ -107,7 +109,7 @@ class transactionController extends Controller
     function getYearPostCount( $month , $year) {
 
         if ($year == null){
-            $monthly_post_count = Transaction::whereMonth( 'created_at', $month )->get()->count();
+            $monthly_post_count = Transaction::whereMonth( 'created_at', $month )->count();
         }
         else {
             $monthly_post_count = Transaction::whereRaw('substr(created_at,1,4) ='.$year)->whereMonth( 'created_at', $month )->get()->count();
