@@ -42,7 +42,7 @@
                         <div class="icon">
                           <i class="ion ion-stats-bars"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{route('customerretention')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                       </div>
                     </div>
                     <!-- ./col -->
@@ -57,7 +57,7 @@
                             <div class="icon">
                                 <i class="ion ion-person-add"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{route('customeracqusition')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -65,9 +65,9 @@
                         <!-- small box -->
                         <div class="small-box bg-danger">
                             <div class="inner">
-                                <h4>65</h4>
+                                <h4>{{$product}}</h4>
 
-                                <p>New Order</p>
+                                <p>New Product</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-pie-graph"></i>
@@ -107,7 +107,7 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-12">
                                         <div class="row">
                                             <div class="col-md-6 col-6">
                                                 <p class="text">

@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Transaction;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
-class transactionController extends Controller
+class customeracqusitionController extends Controller
 {
-    function transaction(){
-
+    public function index(){
+        $year_now = Carbon::now()->startOfYear()->format('Y');
+        //year array
         $year_array = array();
         $posts_dates = Transaction::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
         $posts_dates = json_decode( $posts_dates );
@@ -25,27 +23,21 @@ class transactionController extends Controller
                 $year_array = array_unique($year_array);
             }
         }
-//        return $year_array;
-        $income = Transaction::select('amount')->get();
-        return view('transaction', compact('income'))->with('year_array',$year_array);
-    }
 
-    function year($year){
-        $year_array = array();
+        //current customer acqusition
+        $acqusition = Transaction::select('user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
+        $acq_now = count($acqusition);
 
-        $posts_dates = Transaction::whereRaw('substr(created_at,1,4) ='.$year)->orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
-        $posts_dates = json_decode( $posts_dates );
+        //customer acqusition last month
+        $acqusition = Transaction::select('user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
+        $acq_last = count($acqusition);
 
-        if ( ! empty( $posts_dates ) ) {
-            foreach ( $posts_dates as $unformatted_date ) {
-                $date = new \DateTime( $unformatted_date);
-                $year = $date->format( 'Y' );
-                $year_array[] = $year;
-                $year_array = array_unique($year_array);
-            }
-        }
+        $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
 
-        return $year_array;
+        return view('customeracqusition')->with('acq_now',$acq_now)->with('percentage_acq',$divide_acq)
+            ->with('year_array',$year_array)->with('year_now',$year_now);
     }
 
     function getAllMonths(){
@@ -69,16 +61,18 @@ class transactionController extends Controller
 
             }
         }
-
         return $month_array;
     }
 
 
     function getMonthlyPostCount( $month ) {
 
-        $monthly_post_count = Transaction::whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->whereMonth( 'created_at', $month )
-            ->get()->count();
-        return $monthly_post_count;
+        //current customer acqusition
+        $acqusition = Transaction::select('user_id')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))
+            ->whereMonth( 'created_at', $month )->distinct()->get();
+        $acq_now = count($acqusition);
+
+        return $acq_now;
     }
 
     function getMonthlyPostData() {

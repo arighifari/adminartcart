@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Order;
+use App\Product;
 use App\Transaction;
 use App\User;
 use Carbon\Carbon;
@@ -126,11 +127,17 @@ class dashboardController extends Controller
 
         $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
 
+        //new product
+        $product = Product::select()->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
+
+        //
+
         return view('home', compact('income'))->with('year_array',$year_array)->with('total_rev',$total_rev)
             ->with('percentage_rev', $percentage_rev)->with('current_rev',$current_rev)->with('transaction',$year_transaction)
             ->with('user',$user)->with('average_order',$average_order)->with('percentage_aov',$percentage_aov)->with('count_retention_now',$count_retention_now)
             ->with('count_retention_last',$count_retention_last)->with('percentage_retention',$percentage_retention)->with('divide_acq',$divide_acq)
-            ->with('year_now',$year_now);
+            ->with('year_now',$year_now)->with('product',$product);
     }
 
     public function revenue(){

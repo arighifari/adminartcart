@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Transaction;
-use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
-class transactionController extends Controller
+class customerretentionController extends Controller
 {
-    function transaction(){
-
+    public function index(){
+        $year_now = Carbon::now()->startOfYear()->format('Y');
+        //year array
         $year_array = array();
         $posts_dates = Transaction::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
         $posts_dates = json_decode( $posts_dates );
@@ -25,27 +23,39 @@ class transactionController extends Controller
                 $year_array = array_unique($year_array);
             }
         }
-//        return $year_array;
-        $income = Transaction::select('amount')->get();
-        return view('transaction', compact('income'))->with('year_array',$year_array);
-    }
 
-    function year($year){
-        $year_array = array();
-
-        $posts_dates = Transaction::whereRaw('substr(created_at,1,4) ='.$year)->orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
-        $posts_dates = json_decode( $posts_dates );
-
-        if ( ! empty( $posts_dates ) ) {
-            foreach ( $posts_dates as $unformatted_date ) {
-                $date = new \DateTime( $unformatted_date);
-                $year = $date->format( 'Y' );
-                $year_array[] = $year;
-                $year_array = array_unique($year_array);
+        //customer retention
+        //customer retention this month
+        $retention = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $group_retenteion1 = $retention->groupBy('user_id');
+        $new_total = [];
+        foreach ($group_retenteion1 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total[$total]=sizeof($value);
             }
         }
+        $count_retention_now = count($new_total);
 
-        return $year_array;
+        //customer retention last month
+        $retention_last = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+
+        $group_retention2 = $retention_last->groupBy('user_id');
+        $new_total2 = [];
+        foreach ($group_retention2 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total2[$total]=sizeof($value);
+            }
+        }
+        $count_retention_last = count($new_total2);
+
+        $change_retention = $count_retention_now - $count_retention_last;
+        $divide_retention = $change_retention / $count_retention_last;
+        $percentage_retention = $divide_retention * 100;
+
+        return view('customerretention')->with('retention_now',$count_retention_now)->with('percentage_retention',$percentage_retention)
+            ->with('year_array',$year_array)->with('year_now',$year_now);
     }
 
     function getAllMonths(){
@@ -76,9 +86,19 @@ class transactionController extends Controller
 
     function getMonthlyPostCount( $month ) {
 
-        $monthly_post_count = Transaction::whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->whereMonth( 'created_at', $month )
-            ->get()->count();
-        return $monthly_post_count;
+        //customer retention this month
+        $monthly_post_count = Transaction::select('id','user_id')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))
+            ->whereMonth( 'created_at', $month )->get();
+        $group_retention1 = $monthly_post_count ->groupBy('user_id');
+        $new_total = [];
+        foreach ($group_retention1 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total[$total]=sizeof($value);
+            }
+        }
+        $count_retention_now = count($new_total);
+
+        return $count_retention_now;
     }
 
     function getMonthlyPostData() {
