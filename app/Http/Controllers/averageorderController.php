@@ -6,7 +6,7 @@ use App\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class revenueController extends Controller
+class averageorderController extends Controller
 {
     public function index(){
         $year_now = Carbon::now()->startOfYear()->format('Y');
@@ -23,15 +23,8 @@ class revenueController extends Controller
                 $year_array = array_unique($year_array);
             }
         }
-
-        //Percentage Revenue
-        $total_rev = 0;
-        //current year
-        $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->
-        format('Y'))->get();
-        foreach ($revenue as $in)
-            $total_rev += $in->amount;
-        //current month
+        //Average Order
+        //current rev
         $revenue = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $current_rev = 0;
@@ -44,38 +37,34 @@ class revenueController extends Controller
         foreach ($revenue_last as $in)
             $last_rev += $in->amount;
 
-        $change_rev = $current_rev - $last_rev;
-        $divide_rev = $change_rev / $last_rev;
-        //count percentage revenue
-        $percentage_rev = $divide_rev * 100;
+        //Total Transaction Current Month
+        $month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+        //last month
+        $last_month_transaction = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
 
-        $monthly_post_count_array = array();
-        $month_array = $this->getAllMonths();
-        $month_name_array = array();
-        if ( ! empty( $month_array ) ) {
-            foreach ( $month_array as $month_no => $month_name ){
-                $monthly_post_count = $this->getMonthlyPostCount( $month_no);
-                array_push( $monthly_post_count_array, $monthly_post_count );
-                array_push( $month_name_array, $month_name );
-            }
-        }
+        //Current Average Order Value
+        $average_order = $current_rev / $month_transaction;
 
-        $monthly_post_data_array = array(
-            'months' => $month_name_array,
-            'post_count_data' => $monthly_post_count_array,
-        );
+        //Last Avergae Order Value
+        $last_average_order = $last_rev / $last_month_transaction;
+        $change_aov = $average_order - $last_average_order;
+        $divide_aov = $change_aov / $last_average_order;
+        //count percentage aov
+        $percentage_aov = $divide_aov * 100;        //Current Average Order Value
+        $average_order = $current_rev / $month_transaction;
 
-        for ($i=0; $i< sizeof($monthly_post_count_array); $i++){
-            $result_arr[$i] = $monthly_post_count_array[$i] - $monthly_post_count_array[$i-1];
-        }
-        return $result_arr;
-
+        //Last Avergae Order Value
+        $last_average_order = $last_rev / $last_month_transaction;
+        $change_aov = $average_order - $last_average_order;
+        $divide_aov = $change_aov / $last_average_order;
+        //count percentage aov
+        $percentage_aov = $divide_aov * 100;
 
 
-//        return $monthly_post_data_array;
-
-        return view('revenue')->with('revenue',$current_rev)->with('change_rev',$change_rev)->with('percentage_rev',$percentage_rev)
-            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array);
+        return view('averageorder')->with('averageOrder',$average_order)->with('percentage_Aov',$percentage_aov)
+            ->with('year_array',$year_array)->with('year_now',$year_now);
     }
 
     function getAllMonths(){
@@ -105,15 +94,28 @@ class revenueController extends Controller
 
     function getMonthlyPostCount( $month ) {
 
-
         $revenue = Transaction::whereMonth( 'created_at', $month )
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $current_rev = 0;
         foreach ($revenue as $in)
             $current_rev += $in->amount;
+
+        //Total Transaction Current Month
+        $month_transaction = Transaction::whereMonth( 'created_at', $month )
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
+
+        $average_order = 0;
+
+        if ($month_transaction == 0){
+            $average_order = 0;
+        }
+        elseif ($month_transaction != 0){
+            $average_order = $current_rev / $month_transaction;
+        }
+
 //        $acq_now = count($acqusition);
 
-        return $current_rev;
+        return $average_order;
     }
 
     function getMonthlyPostData() {

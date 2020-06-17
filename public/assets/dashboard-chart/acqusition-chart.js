@@ -11,7 +11,7 @@
 
         ajaxGetPostMonthlyData: function () {
 
-            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-post-chart-data';
+            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-acqusition-chart-data';
             var request = $.ajax( {
                 method: 'GET',
                 url: urlPath
@@ -29,7 +29,7 @@
          */
         createCompletedJobsChart: function ( response ) {
 
-            var ctx = document.getElementById("transaction-Chart");
+            var ctx = document.getElementById("acqusition-Chart");
             //clear old chart data
             if(window.bar != undefined)
                 window.bar  .destroy();
@@ -70,7 +70,7 @@
                             ticks: {
                                 min: 0,
                                 max: response.max, // The response got from the ajax request containing max limit for y axis
-                                maxTicksLimit: 20
+                                maxTicksLimit: response.max
                             },
                             gridLines: {
                                 color: "rgba(0, 0, 0, .125)",

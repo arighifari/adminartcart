@@ -27,7 +27,7 @@
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{route('revenue')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -197,7 +197,7 @@
                                             <span class="description-percentage @if($percentage_rev > 0) text-success @elseif($percentage_rev == 0) text-yellow @else text-danger @endif ">
                                                 @if($percentage_rev > 0)<i class="fas fa-caret-up"></i> @elseif($percentage_rev == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_rev,2)}}%</span>
                                             <h5 class="description-header">Rp. {{number_format($current_rev)}}</h5>
-                                            <span class="description-text">TOTAL REVENUE</span>
+                                            <a href="{{route('revenue')}}" style="color: black"><span class="description-text">Revenue</span></a>
                                         </div>
                                         <!-- /.description-block -->
                                     </div>
@@ -206,7 +206,7 @@
                                         <div class="description-block border-right">
                                             <span class="description-percentage text-danger"> @if($percentage_aov > 0)<i class="fas fa-caret-up"></i> @elseif($percentage_aov == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_aov,2)}}%</span>
                                             <h5 class="description-header">Rp. {{number_format($average_order)}}</h5>
-                                            <span class="description-text">Average Order Value</span>
+                                            <a style="color: black" href="{{route('averageorder')}}"><span class="description-text">Average Order Value</span></a>
                                         </div>
                                         <!-- /.description-block -->
                                     </div>
@@ -244,7 +244,7 @@
 
     <script src="{{url( 'assets/chart.js/jquery.min.js' )}}"></script>
     <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
-    <script src="{{url( 'assets/dashboard-chart/create-chart.js' )}}"></script>
+    <script src="{{url( 'assets/dashboard-chart/transaction-chart.js' )}}"></script>
     <script src="{{url( 'assets/dashboard-chart/year_transaction.js' )}}"></script>
 
     <script>
@@ -253,7 +253,7 @@
                 var year_filter = $('#tahun').val();
                 $.ajax({
                     type: 'GET',
-                    url: window.location('/get-post-chart-data/'+year_filter),
+                    url: window.location('/get-transaction-chart-data/'+year_filter),
                     data: {year_filter:year_filter},
                     success: function(response){
                         $('#transaction-Chart').html(response);

@@ -26,16 +26,16 @@
                                     <div class="row">
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">{{number_format($acq_now)}}</h5>
-                                                <span class="description-text">Customer Acqusition</span>
+                                                <h5 class="description-header">Rp. {{number_format($averageOrder)}}</h5>
+                                                <span class="description-text">Average Order Value</span>
                                             </div>
                                             <!-- /.description-block -->
                                         </div>
                                         <!-- /.col -->
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">{{number_format($percentage_acq)}} %</h5>
-                                                <span class="description-text">Percentage Customer Acqusition</span>
+                                                <h5 class="description-header">{{number_format($percentage_Aov,2)}} %</h5>
+                                                <span class="description-text">Percentage Average Order Value</span>
                                             </div>
                                             <!-- /.description-block -->
                                         </div>
@@ -48,7 +48,7 @@
                                         <div class="row" style="margin-top: 10px">
                                             <div class="col-md-6 col-6">
                                                 <p class="text">
-                                                    <strong>Customer Acqusition Chart</strong>
+                                                    <strong>Average Order Value Chart</strong>
                                                 </p>
                                             </div>
                                             <div class="col-md-6 col-6">
@@ -74,7 +74,7 @@
                                         </div>
                                         <div class="chart">
                                             <!-- Sales Chart Canvas -->
-                                            <canvas id="acqusition-Chart" height="180" style="height: 180px;"></canvas>
+                                            <canvas id="aov-Chart" height="180" style="height: 180px;"></canvas>
                                         </div>
                                         <!-- /.chart-responsive -->
                                     </div>
@@ -94,6 +94,6 @@
 
     <script src="{{url( 'assets/chart.js/jquery.min.js' )}}"></script>
     <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
-    <script src="{{url( 'assets/dashboard-chart/acqusition-chart.js' )}}"></script>
+    <script src="{{url( 'assets/dashboard-chart/aov-chart.js' )}}"></script>
 
 @endsection

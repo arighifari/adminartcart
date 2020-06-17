@@ -114,7 +114,7 @@ class customerretentionController extends Controller
         }
 
         $max_no = max( $monthly_post_count_array );
-        $max = round(( $max_no + 10/2 ) / 10 ) * 10;
+        $max = round(( $max_no + 10/2 ) / 10 ) * 10 ;
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,

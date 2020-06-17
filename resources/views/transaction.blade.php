@@ -51,7 +51,7 @@
 
 <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
 
-<script src="{{url( 'assets/dashboard-chart/create-chart.js' )}}"></script>
+<script src="{{url( 'transaction-chart.jsrt.js' )}}"></script>
 
 <script src="{{url( 'assets/dashboard-chart/year_transaction.js' )}}"></script>
 

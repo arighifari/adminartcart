@@ -39,6 +39,7 @@ class dashboardController extends Controller
         //Percentage Revenue
         $currentmonth = date('m');
         $total_rev = 0;
+
         $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->
         format('Y'))->get();
         foreach ($revenue as $in)

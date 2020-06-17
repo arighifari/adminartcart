@@ -74,7 +74,7 @@
                                         </div>
                                         <div class="chart">
                                             <!-- Sales Chart Canvas -->
-                                            <canvas id="transaction-Chart" height="180" style="height: 180px;"></canvas>
+                                            <canvas id="retention-Chart" height="180" style="height: 180px;"></canvas>
                                         </div>
                                         <!-- /.chart-responsive -->
                                     </div>

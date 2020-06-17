@@ -11,7 +11,7 @@
 
         ajaxGetPostMonthlyData: function () {
 
-            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-post-chart-data';
+            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-transaction-chart-data';
             var request = $.ajax( {
                 method: 'GET',
                 url: urlPath
@@ -70,7 +70,7 @@
                             ticks: {
                                 min: 0,
                                 max: response.max, // The response got from the ajax request containing max limit for y axis
-                                maxTicksLimit: 20
+                                maxTicksLimit: 5
                             },
                             gridLines: {
                                 color: "rgba(0, 0, 0, .125)",
@@ -86,6 +86,5 @@
     };
 
     charts.init();
-
 
 } )( jQuery );

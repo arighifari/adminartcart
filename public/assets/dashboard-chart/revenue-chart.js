@@ -11,7 +11,7 @@
         },
 
         ajaxGetPostMonthlyData: function () {
-            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-revenue-count';
+            var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-revenue-chart-data';
             var request = $.ajax( {
                 method: 'GET',
                 url: urlPath
@@ -28,7 +28,11 @@
          */
         createCompletedJobsChart: function ( response ) {
 
-            var ctx = document.getElementById("transaction-Chart");
+            var ctx = document.getElementById("revenue-Chart");
+            //clear old chart data
+            if(window.bar != undefined)
+                window.bar  .destroy();
+
             var myLineChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -79,10 +83,5 @@
             });
         }
     };
-
     charts.init();
-    setInterval(()=>{
-        charts.init();
-    },10000)
-
 } )( jQuery );
