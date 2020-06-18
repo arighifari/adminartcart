@@ -60,22 +60,59 @@ class revenueController extends Controller
             }
         }
 
+        //revenue change
+        $i = 1;
+        $result_arr0[] = $monthly_post_count_array[0];
+        while ( $i < sizeof($monthly_post_count_array)) {
+            $result_arr1[$i] = $monthly_post_count_array[$i]-$monthly_post_count_array[$i-1];
+            if ($i == sizeof($monthly_post_count_array)-1) {
+                break;
+            }
+            $i++;
+        }
+        $result = array_merge($result_arr0,$result_arr1);
+
+        $i = 1;
+        $result_arr2[] = $monthly_post_count_array[0];
+        while ( $i < sizeof($monthly_post_count_array)) {
+//            $result_arr1[$i] = 0;
+//            $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
+            if ($monthly_post_count_array[$i-1] == 0){
+                $result_arr1[$i] = 0;
+            }
+            else{
+                $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
+            }
+            if ($i == sizeof($monthly_post_count_array)-1) {
+                break;
+            }
+            $i++;
+        }
+        $result2 = array_merge($result_arr2,$result_arr1);
+
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
+            'revenue_change' => $result,
+            'percentage' => $result2
         );
 
-        for ($i=0; $i< sizeof($monthly_post_count_array); $i++){
-            $result_arr[$i] = $monthly_post_count_array[$i] - $monthly_post_count_array[$i-1];
-        }
-        return $result_arr;
+//        for ($i=0; $i<sizeof($monthly_post_count_array); $i++){
+//            for ($a=1 ; $a < sizeof($monthly_post_count_array);$a++){
+//                $result_arr1[$i] = $monthly_post_count_array[$i+1]-$monthly_post_count_array[$i];
+//                if ($i == sizeof($monthly_post_count_array)){
+//                    break;
+//                }
+//                $result_arr2[$a] = $monthly_post_count_array[$a];
+//                $result_arr3[$a] = $monthly_post_count_array[$a] - $monthly_post_count_array[$i];
+//            }
+//        }
 
-
-
-//        return $monthly_post_data_array;
+//        dd($result_arr1);
+//        return $result_arr;
 
         return view('revenue')->with('revenue',$current_rev)->with('change_rev',$change_rev)->with('percentage_rev',$percentage_rev)
-            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array);
+            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array)->with('month_data',$result);
     }
 
     function getAllMonths(){

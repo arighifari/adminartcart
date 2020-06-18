@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="chart">
                                             <!-- Sales Chart Canvas -->
-                                            <canvas id="transaction-Chart" height="180" style="height: 180px;"></canvas>
+                                            <canvas id="transaction-Chart" height="150" style="height: 180px;"></canvas>
                                         </div>
                                         <!-- /.chart-responsive -->
                                     </div>

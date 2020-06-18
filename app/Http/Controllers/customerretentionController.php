@@ -54,8 +54,55 @@ class customerretentionController extends Controller
         $divide_retention = $change_retention / $count_retention_last;
         $percentage_retention = $divide_retention * 100;
 
+        $monthly_post_count_array = array();
+        $month_array = $this->getAllMonths();
+        $month_name_array = array();
+        if ( ! empty( $month_array ) ) {
+            foreach ( $month_array as $month_no => $month_name ){
+                $monthly_post_count = $this->getMonthlyPostCount( $month_no);
+                array_push( $monthly_post_count_array, $monthly_post_count );
+                array_push( $month_name_array, $month_name );
+            }
+        }
+
+        $i = 1;
+        $result_arr0[] = $monthly_post_count_array[0];
+        while ( $i < sizeof($monthly_post_count_array)) {
+            $result_arr1[$i] = $monthly_post_count_array[$i]-$monthly_post_count_array[$i-1];
+            if ($i == sizeof($monthly_post_count_array)-1) {
+                break;
+            }
+            $i++;
+        }
+        $result = array_merge($result_arr0,$result_arr1);
+
+        $i = 1;
+        $result_arr2[] = $monthly_post_count_array[0];
+        while ( $i < sizeof($monthly_post_count_array)) {
+//            $result_arr1[$i] = 0;
+//            $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
+            if ($monthly_post_count_array[$i-1] == 0){
+                $result_arr1[$i] = 0;
+            }
+            else{
+                $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
+            }
+            if ($i == sizeof($monthly_post_count_array)-1) {
+                break;
+            }
+            $i++;
+        }
+        $result2 = array_merge($result_arr2,$result_arr1);
+
+        $monthly_post_data_array = array(
+            'months' => $month_name_array,
+            'post_count_data' => $monthly_post_count_array,
+            'revenue_change' => $result,
+            'percentage' => $result2
+        );
+
         return view('customerretention')->with('retention_now',$count_retention_now)->with('percentage_retention',$percentage_retention)
-            ->with('year_array',$year_array)->with('year_now',$year_now);
+            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array)->with('month_data',$result);
     }
 
     function getAllMonths(){

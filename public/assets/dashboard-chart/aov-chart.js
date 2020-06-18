@@ -27,8 +27,10 @@
         /**
          * Created the Completed Jobs Chart
          */
-        createCompletedJobsChart: function ( response ) {
 
+    createCompletedJobsChart: function ( response ) {
+
+            var x = response.post_count_data;
             var ctx = document.getElementById("aov-Chart");
             //clear old chart data
             if(window.bar != undefined)
@@ -39,7 +41,7 @@
                 data: {
                     labels: response.months, // The response got from the ajax request containing all month names in the database
                     datasets: [{
-                        label: "Total ",
+                        label: "Rp. ",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
@@ -50,7 +52,7 @@
                         pointHoverBackgroundColor: "rgba(2,117,216,1)",
                         pointHitRadius: 5,
                         pointBorderWidth: 2,
-                        data: response.post_count_data // The response got from the ajax request containing data for the completed jobs in the corresponding months
+                        data: x // The response got from the ajax request containing data for the completed jobs in the corresponding months
                     }],
                 },
                 options: {

@@ -26,7 +26,7 @@
                                     <div class="row">
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">Rp. {{number_format($revenue)}}</h5>
+                                                <h5 class="description-header">Rp. {{number_format($revenue,2)}}</h5>
                                                 <span class="description-text">Revenue</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -34,7 +34,7 @@
                                         <!-- /.col -->
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">Rp. {{number_format($change_rev)}}</h5>
+                                                <h5 class="description-header">Rp. {{number_format($change_rev,2)}}</h5>
                                                 <span class="description-text">Revenue Change</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -81,7 +81,7 @@
                                         </div>
                                         <div class="chart">
                                             <!-- Sales Chart Canvas -->
-                                            <canvas id="revenue-Chart" height="180" style="height: 180px;"></canvas>
+                                            <canvas id="revenue-Chart" height="120" style="height: 180px;"></canvas>
                                         </div>
                                         <!-- /.chart-responsive -->
                                     </div>
@@ -101,34 +101,51 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table-bordered table-hover">
-                                <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Bulan</th>
-                                    <th>Revenue</th>
-                                    <th>Revenue Change</th>
-                                    <th>Percentage Revenue Change</th>
-                                </tr>
-                                </thead>
-                                @php($no=1)
-                                @foreach($data_table['months'] as $key => $data)
-                                    <tr>
-                                        <td>{{$no++}}</td>
-                                        <td>{{$data}}</td>
-                                        <td>{{$data_table['post_count_data'][$key]}}</td>
-                                        <td>{{$data_table['post_count_data'][$key] - last($data_table['post_count_data'][$key])}}</td>
-                                        <td></td>
-                                    </tr>
-                                @endforeach
-                            </table>
+                        <!-- /.card-header -->
+                        <div class="card">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table s-0">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Month</th>
+                                            <th>Revenue</th>
+                                            <th>Revenue Change</th>
+                                            <th>Percentage Revenue Change</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @php($no=1)
+                                        {{--@foreach(array_combine($data_table['months'] , $month_data) as $key => $data )--}}
+                                        {{--<tr>--}}
+                                        {{--<td>{{$no++}}</td>--}}
+                                        {{--<td>{{$key}}</td>--}}
+                                        {{--<td>{{$data['post_count_data'][$key]}}</td>--}}
+                                        {{--<td>a</td>--}}
+                                        {{--<td>{{$data}}</td>--}}
+                                        {{--<td>{{$key['post_count_data']}}</td>--}}
+                                        {{--</tr>--}}
+                                        {{--@endforeach--}}
+                                        @foreach($data_table['months'] as $key => $data)
+                                            <tr>
+                                                <td>{{$no++}}</td>
+                                                <td>{{$data}}</td>
+                                                <td>Rp. {{number_format($data_table['post_count_data'][$key],2)}}</td>
+                                                <td>Rp. {{number_format($data_table['revenue_change'][$key],2)}}</td>
+                                                <td>{{number_format($data_table['percentage'][$key],2)}} %</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.table-responsive -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 
     <script src="{{url( 'assets/chart.js/jquery.min.js' )}}"></script>

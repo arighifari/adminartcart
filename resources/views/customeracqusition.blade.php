@@ -74,7 +74,7 @@
                                         </div>
                                         <div class="chart">
                                             <!-- Sales Chart Canvas -->
-                                            <canvas id="acqusition-Chart" height="180" style="height: 180px;"></canvas>
+                                            <canvas id="acqusition-Chart" height="120" style="height: 180px;"></canvas>
                                         </div>
                                         <!-- /.chart-responsive -->
                                     </div>
@@ -88,6 +88,45 @@
                     <!-- /.col -->
                 </div>
                 <!-- /.row -->
+            </div>
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- /.card-header -->
+                        <div class="card">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table s-0">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Month</th>
+                                            <th>Customer Acqusition</th>
+                                            <th>Customer Acqusition Change</th>
+                                            <th>Percentage Customer Acqusition</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @php($no=1)
+                                        @foreach($data_table['months'] as $key => $data)
+                                            <tr>
+                                                <td>{{$no++}}</td>
+                                                <td>{{$data}}</td>
+                                                <td>{{$data_table['post_count_data'][$key]}}</td>
+                                                <td>{{$data_table['revenue_change'][$key]}}</td>
+                                                <td>{{$data_table['percentage'][$key]}} %</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.table-responsive -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
