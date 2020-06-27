@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'dashboardController@Dashboard');
-Route::get('/navbar', 'dashboardController@home');
+Route::get('/dash', 'dashboardController@Dashboard');
+Route::get('/', 'dashboardController@home')->name('dashboard');
 Route::get('/rev', 'revenueController@index')->name('revenue');
 Route::get('/customerretention', 'customerretentionController@index')->name('customerretention');
 Route::get('/customeracqusition', 'customeracqusitionController@index')->name('customeracqusition');
 Route::get('/averageorder', 'averageorderController@index')->name('averageorder');
+Route::get('/product', 'productController@index')->name('product');
 
 
 
@@ -46,6 +47,11 @@ Route::get('/aov', 'averageorderController@transaction');
 Route::get('/get-total-aov' , 'averageorderController@getAllMonths');
 Route::get('/get-aov-chart-data', 'averageorderController@getMonthlyPostData');
 Route::get('/get-aov-chart-data/{year}', 'averageorderController@getYearPostData');
+
+Route::get('/prod', 'productController@transaction');
+Route::get('/get-total-product' , 'productController@getAllMonths');
+Route::get('/get-product-chart-data', 'productController@getMonthlyPostData');
+Route::get('/get-product-chart-data/{year}', 'productController@getYearPostData');
 
 Auth::routes();
 
