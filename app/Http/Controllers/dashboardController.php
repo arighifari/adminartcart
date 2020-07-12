@@ -7,6 +7,7 @@ use App\Product;
 use App\Transaction;
 use App\User;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use function GuzzleHttp\Promise\all;
 use Illuminate\Http\Request;
 
@@ -75,8 +76,14 @@ class dashboardController extends Controller
         //Total User
         $user = User::count();
 
+
         //Current Average Order Value
-        $average_order = $current_rev / $month_transaction;
+        if ($current_rev == 0){
+            $average_order = 0;
+        }
+        else{
+            $average_order = $current_rev / $month_transaction;
+        }
 
         //Last Avergae Order Value
         $last_average_order = $last_rev / $last_month_transaction;
@@ -132,13 +139,31 @@ class dashboardController extends Controller
         $product = Product::select()->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
 
-        //
+        //rata-rata pengiriman
+        $diterima = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $waktu = [];
+        foreach ($diterima as $total => $value ){
+            $dibuat = Carbon::parse($value->created_at);
+            $waktu_diterima = Carbon::parse($value->pesanan_diterima);
+            $waktu[$total]= $dibuat->diffInSeconds($waktu_diterima);
+//            $selisih_waktu = abs($dibuat-$waktu_diterima);
+        }
+
+        $total_waktu = 0;
+        foreach ($waktu as $total){
+            $total_waktu += $total;
+        }
+        $jumlah_transaksi = count($diterima);
+        $rata2 = $total_waktu/$jumlah_transaksi;
+        $selisih = CarbonInterval::seconds($rata2)->cascade()->forHumans();
+
 
         return view('home', compact('income'))->with('year_array',$year_array)->with('total_rev',$total_rev)
             ->with('percentage_rev', $percentage_rev)->with('current_rev',$current_rev)->with('transaction',$year_transaction)
             ->with('user',$user)->with('average_order',$average_order)->with('percentage_aov',$percentage_aov)->with('count_retention_now',$count_retention_now)
             ->with('count_retention_last',$count_retention_last)->with('percentage_retention',$percentage_retention)->with('divide_acq',$divide_acq)
-            ->with('year_now',$year_now)->with('product',$product);
+            ->with('year_now',$year_now)->with('product',$product)->with('rata_hari',$selisih);
     }
 
     public function revenue(){

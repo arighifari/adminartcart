@@ -10,7 +10,6 @@
         },
 
         ajaxGetPostMonthlyData: function () {
-
             var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-retention-chart-data';
             var request = $.ajax( {
                 method: 'GET',

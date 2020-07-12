@@ -1,7 +1,7 @@
 @extends('layouts.navbar')
 
 @section('sidebar')
-    <div class="content-wrapper">
+    <section class="content-wrapper">
         <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
@@ -20,14 +20,14 @@
                         <!-- small box -->
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h4>Rp. {{number_format($total_rev)}}</h4>
+                                <h4>{{$rata_hari}}</h4>
 
-                                <p>Revenue</p>
+                                <p>Waktu Pengiriman</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="{{route('revenue')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{route('time')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -240,14 +240,60 @@
                 <!-- /.row -->
             </div>
         </section>
+            <div class="container-fluid">
+                <!-- Small boxes (Stat box) -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                {{--<h5 class="card-title">Monthly Recap Report</h5>--}}
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12 col-12">
+                                                <p class="text-center">
+                                                    <strong>Product Plagiarisme Chart</strong>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6 col-6">
+                                            </div>
+                                        </div>
+                                        <div class="chart">
+                                            <!-- Sales Chart Canvas -->
+                                            <canvas id="oilChart" width="200" height="50"></canvas>
+                                        </div>
+                                        <!-- /.chart-responsive -->
+                                    </div>
+                                <!-- /.col -->
+                                </div>
+                                <!-- /.row -->
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                {{--<div class="row">--}}
+                    {{--<div class="chart">--}}
+                        {{--<!-- Sales Chart Canvas -->--}}
+                        {{--<canvas id="oilChart" width="600" height="400"></canvas>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            </div>
+        </section>
     </div>
 
     <script src="{{url( 'assets/chart.js/jquery.min.js' )}}"></script>
     <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
     <script src="{{url( 'assets/dashboard-chart/transaction-chart.js' )}}"></script>
     <script src="{{url( 'assets/dashboard-chart/year_transaction.js' )}}"></script>
+    <script src="{{url( 'assets/dashboard-chart/plagiat-pie-chart.js' )}}"></script>
 
-    <script>
+
+        <script>
         $(document).ready(function(){
             $('#tahun').change(function(){
                 var year_filter = $('#tahun').val();

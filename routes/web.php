@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+Auth::routes();
+
+Route::get('/homie', 'HomeController@index')->name('home');
+
 Route::get('/dash', 'dashboardController@Dashboard');
 Route::get('/', 'dashboardController@home')->name('dashboard');
 Route::get('/rev', 'revenueController@index')->name('revenue');
@@ -53,6 +58,8 @@ Route::get('/get-total-product' , 'productController@getAllMonths');
 Route::get('/get-product-chart-data', 'productController@getMonthlyPostData');
 Route::get('/get-product-chart-data/{year}', 'productController@getYearPostData');
 
-Auth::routes();
+Route::get('/time', 'DiffTimeController@index')->name('time');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/product_plagiat', 'plagiatController@index')->name('plagiat');
+Route::get('/get-plagiat-chart-data', 'plagiatController@index');
+

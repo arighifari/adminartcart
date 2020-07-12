@@ -123,7 +123,6 @@ class customerretentionController extends Controller
                 }
                 $month_array[ $month_no ] = $month_name;
                 $month_array = $all_month;
-
             }
         }
 

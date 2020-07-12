@@ -51,6 +51,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Review','user_id','id');
     }
 
+    public function transactions()
+    {
+        return $this->hasMany('App\Transaction','user_id','id');
+    }
+
     public function addresses()
     {
         return $this->belongsTo('App\Address','address','id');

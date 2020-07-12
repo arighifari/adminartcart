@@ -45,21 +45,34 @@ class averageorderController extends Controller
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
 
         //Current Average Order Value
-        $average_order = $current_rev / $month_transaction;
+
+        if ($current_rev == 0){
+            $average_order = 0;
+        }
+        else{
+            $average_order = $current_rev / $month_transaction;
+        }
 
         //Last Avergae Order Value
         $last_average_order = $last_rev / $last_month_transaction;
         $change_aov = $average_order - $last_average_order;
         $divide_aov = $change_aov / $last_average_order;
         //count percentage aov
-        $percentage_aov = $divide_aov * 100;        //Current Average Order Value
-        $average_order = $current_rev / $month_transaction;
+        $percentage_aov = $divide_aov * 100;
+        //Current Average Order Value
+        if ($current_rev == 0){
+            $average_order = 0;
+        }
+        else{
+            $average_order = $current_rev / $month_transaction;
+        }
 
         //Last Avergae Order Value
         $last_average_order = $last_rev / $last_month_transaction;
         $change_aov = $average_order - $last_average_order;
         $divide_aov = $change_aov / $last_average_order;
         //count percentage aov
+
         $percentage_aov = $divide_aov * 100;
 
         $monthly_post_count_array = array();

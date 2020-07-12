@@ -26,7 +26,10 @@
                                     <div class="row">
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">Rp. {{number_format($revenue,2)}}</h5>
+                                                @foreach($revenue['revenue'] as $key => $data)
+                                                    <h5 class="description-header">Rp. {{number_format($data,2)}}</h5>
+                                                @endforeach
+{{--                                                <h5 class="description-header">Rp. {{number_format($revenue,2)}}</h5>--}}
                                                 <span class="description-text">Revenue</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -34,14 +37,20 @@
                                         <!-- /.col -->
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">Rp. {{number_format($change_rev,2)}}</h5>
+                                                @foreach($revenue['revenue'] as $key => $data)
+                                                    <h5 class="description-header">Rp. {{number_format($revenue['change_rev'][$key],2)}}</h5>
+                                                @endforeach
+                                                {{--<h5 class="description-header">Rp. {{number_format($change_rev,2)}}</h5>--}}
                                                 <span class="description-text">Revenue Change</span>
                                             </div>
                                             <!-- /.description-block -->
                                         </div>
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">{{number_format($percentage_rev,2)}} %</h5>
+                                                @foreach($revenue['revenue'] as $key => $data)
+                                                    <h5 class="description-header">Rp. {{number_format($revenue['percentage_rev'][$key],2)}}</h5>
+                                                @endforeach
+                                                {{--<h5 class="description-header">{{number_format($percentage_rev,2)}} %</h5>--}}
                                                 <span class="description-text">Revenue Percent Change</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -117,16 +126,6 @@
                                         </thead>
                                         <tbody>
                                         @php($no=1)
-                                        {{--@foreach(array_combine($data_table['months'] , $month_data) as $key => $data )--}}
-                                        {{--<tr>--}}
-                                        {{--<td>{{$no++}}</td>--}}
-                                        {{--<td>{{$key}}</td>--}}
-                                        {{--<td>{{$data['post_count_data'][$key]}}</td>--}}
-                                        {{--<td>a</td>--}}
-                                        {{--<td>{{$data}}</td>--}}
-                                        {{--<td>{{$key['post_count_data']}}</td>--}}
-                                        {{--</tr>--}}
-                                        {{--@endforeach--}}
                                         @foreach($data_table['months'] as $key => $data)
                                             <tr>
                                                 <td>{{$no++}}</td>

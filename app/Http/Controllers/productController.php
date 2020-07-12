@@ -33,7 +33,13 @@ class productController extends Controller
         $product_last = Product::select()->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
 
-        $divide_prod = ($product-$product_last) / $product_last*100;
+        if ($product == 0){
+            $divide_prod = 0;
+        }
+        else{
+            $divide_prod = ($product-$product_last) / $product_last*100;
+        }
+
 
         $monthly_post_count_array = array();
         $month_array = $this->getAllMonths();

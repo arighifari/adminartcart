@@ -1,14 +1,75 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Tests\Feature\Controller;
 
 use App\Transaction;
+use App\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Facade\Ignition\Support\Packagist\Package;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
-class revenueController extends Controller
+class RevenueControllerTest extends TestCase
 {
-    public function index(){
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+
+    use RefreshDatabase;
+
+
+    public function testExample()
+    {
+        $user = User::create([
+            'name' => 'ArtCart',
+            'email' => 'admin@artcart.com',
+            'password' => Hash::make('admin12345'),
+            'dob'=> '1998-02-10',
+            'gender'=> 'M',
+            'balance' => '500000',
+            'phone_num' => '85938369897',
+            'bio' => 'Admin Account',
+            'home_address' => 'Ciganitri',
+            'admin' => 1
+        ]);
+
+        $trans = Transaction::create([
+            'user_id' => '1',
+            'transaction' => 'bank_transfer',
+            'amount' => 10000,
+            'status' => rand(1,4),
+            'created_at' => Carbon::now()->format('2020-7-20 15:23:23'),
+            'updated_at' => Carbon::now()->format('2020-7-20 15:23:23')
+        ]);
+        $trans = Transaction::create([
+            'user_id' => 1,
+            'transaction' => 'bank_transfer',
+            'amount' => 10000,
+            'status' => rand(1,4),
+            'created_at' => Carbon::now()->format('2020-7-20 15:23:23'),
+            'updated_at' => Carbon::now()->format('2020-7-20 15:23:23')
+        ]);
+        $trans = Transaction::create([
+            'user_id' => 1,
+            'transaction' => 'bank_transfer',
+            'amount' => 10000,
+            'status' => rand(1,4),
+            'created_at' => Carbon::now()->format('2020-6-20 15:23:23'),
+            'updated_at' => Carbon::now()->format('2020-6-20 15:23:23')
+        ]);
+        $trans = Transaction::create([
+            'user_id' => 1,
+            'transaction' => 'bank_transfer',
+            'amount' => 10000,
+            'status' => rand(1,4),
+            'created_at' => Carbon::now()->format('2020-6-20 15:23:23'),
+            'updated_at' => Carbon::now()->format('2020-6-20 15:23:23')
+        ]);
+
         $year_now = Carbon::now()->startOfYear()->format('Y');
         //year array
         $year_array = array();
@@ -27,25 +88,32 @@ class revenueController extends Controller
         //Percentage Revenue
         $total_rev = 0;
         //current year
-        $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->
-        format('Y'))->get();
+        $revenue = Transaction::select('amount')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y') )->get();
+        dd($revenue);
         foreach ($revenue as $in)
             $total_rev += $in->amount;
         //current month
-        $revenue = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $revenue = Transaction::where('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
+            ->where('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        dd($revenue);
         $current_rev = 0;
         foreach ($revenue as $in)
             $current_rev += $in->amount;
         //last month
-        $revenue_last = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+        $revenue_last = Transaction::whereRaw('(created_at) = ?', Carbon::now()->subMonth()->format('m'))
+            ->whereRAW('(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $last_rev = 0;
         foreach ($revenue_last as $in)
             $last_rev += $in->amount;
 
         $change_rev = $current_rev - $last_rev;
-        $divide_rev = $change_rev / $last_rev;
+        if ($change_rev == 0){
+            $divide_rev = 0;
+        }
+        else{
+//            $average_order = $current_rev / $month_transaction;
+            $divide_rev = $change_rev / $last_rev;
+        }
         //count percentage revenue
         $percentage_rev = $divide_rev * 100;
 
@@ -108,12 +176,12 @@ class revenueController extends Controller
             'change_rev' => $arr_change,
             'percentage_rev' => $arr_percent
         );
-//        return ($revenue_data);
 
-        return view('revenue')->with('revenue',$revenue_data)->with('year_array',$year_array)->with('year_now',$year_now)
-            ->with('data_table',$monthly_post_data_array)->with('month_data',$result);
+        $response = $this->get('/rev',[$revenue_data],[$year_array],[$year_now],[$monthly_post_data_array],[$result]);
+        $response->assertStatus(200);
+//        $response->assertDontSee('revenue');
+
     }
-
     function getAllMonths(){
         $month_array = array();
         $posts_dates = Transaction::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
@@ -143,7 +211,7 @@ class revenueController extends Controller
 
 
         $revenue = Transaction::whereMonth( 'created_at', $month )
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
+            ->whereRAW('(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $current_rev = 0;
         foreach ($revenue as $in)
             $current_rev += $in->amount;
@@ -177,39 +245,5 @@ class revenueController extends Controller
 
         return $monthly_post_data_array;
 
-    }
-
-    function getYearPostCount( $month , $year) {
-
-        if ($year == null){
-            $monthly_post_count = Transaction::whereMonth( 'created_at', $month )->count();
-        }
-        else {
-            $monthly_post_count = Transaction::whereRaw('substr(created_at,1,4) ='.$year)->whereMonth( 'created_at', $month )->get()->count();
-        }
-        return $monthly_post_count;
-    }
-
-    function getYearPostData($year) {
-        $monthly_post_count_array = array();
-        $month_array = $this->getAllMonths();
-        $month_name_array = array();
-        if ( ! empty( $month_array ) ) {
-            foreach ( $month_array as $month_no => $month_name ){
-                $monthly_post_count = $this->getYearPostCount( $month_no , $year  );
-                array_push( $monthly_post_count_array, $monthly_post_count );
-                array_push( $month_name_array, $month_name );
-            }
-        }
-
-        $max_no = max( $monthly_post_count_array );
-        $max = round(( $max_no + 10/2 ) / 10 ) * 10;
-        $monthly_post_data_array = array(
-            'months' => $month_name_array,
-            'post_count_data' => $monthly_post_count_array,
-            'max' => $max,
-        );
-
-        return $monthly_post_data_array;
     }
 }

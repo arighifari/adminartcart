@@ -18,7 +18,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title">Customer Acqusition Recap Report</h5>
+                                <h5 class="card-title">Average Order Value Recap Report</h5>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">

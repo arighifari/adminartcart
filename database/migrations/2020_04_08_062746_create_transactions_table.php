@@ -14,7 +14,15 @@ class CreateTransactionsTable extends Migration
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('transaction');
+            $table->integer('amount');
+            $table->integer('status')->nullable();
+            $table->string('pesanan_diproses')->nullable();
+            $table->string('pesanan_dikirim')->nullable();
+            $table->string('pesanan_diterima')->nullable();
             $table->timestamps();
         });
     }
