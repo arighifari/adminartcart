@@ -118,7 +118,7 @@ class averageorderController extends Controller
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
-            'revenue_change' => $result,
+            'aov_change' => $result,
             'percentage' => $result2
         );
 

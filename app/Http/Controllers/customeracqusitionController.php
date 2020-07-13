@@ -61,8 +61,6 @@ class customeracqusitionController extends Controller
         $i = 1;
         $result_arr2[] = $monthly_post_count_array[0];
         while ( $i < sizeof($monthly_post_count_array)) {
-//            $result_arr1[$i] = 0;
-//            $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
             if ($monthly_post_count_array[$i-1] == 0){
                 $result_arr1[$i] = 0;
             }
@@ -79,7 +77,7 @@ class customeracqusitionController extends Controller
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
-            'revenue_change' => $result,
+            'acqusition_change' => $result,
             'percentage' => $result2
         );
 

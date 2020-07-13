@@ -23,6 +23,7 @@ class CreateTransactionsTable extends Migration
             $table->string('pesanan_diproses')->nullable();
             $table->string('pesanan_dikirim')->nullable();
             $table->string('pesanan_diterima')->nullable();
+            $table->string('pesanan_dibuat')->nullable();
             $table->timestamps();
         });
     }

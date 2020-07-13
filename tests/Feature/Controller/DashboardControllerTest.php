@@ -2,26 +2,24 @@
 
 namespace Tests\Feature\Controller;
 
+use App\Product;
 use App\Transaction;
 use App\User;
 use Carbon\Carbon;
-use Facade\Ignition\Support\Packagist\Package;
+use Carbon\CarbonInterval;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class RevenueControllerTest extends TestCase
+class DashboardControllerTest extends TestCase
 {
     /**
      * A basic feature test example.
      *
      * @return void
      */
-
     use RefreshDatabase;
-
-
     public function testExample()
     {
         $user = User::create([
@@ -142,26 +140,11 @@ class RevenueControllerTest extends TestCase
         ]);
 
         $year_now = Carbon::now()->startOfYear()->format('Y');
-        //year array
+
+        //Get Year Dropdown
         $year_array = array();
-        $posts_dates = Transaction::orderBy( 'pesanan_dibuat', 'ASC' )->pluck( 'pesanan_dibuat' );
+        $posts_dates = Transaction::orderBy( 'pesanan_dibuat', 'ASC' )->pluck( 'created_at' );
         $posts_dates = json_decode( $posts_dates );
-
-        if ( ! empty( $posts_dates ) ) {
-            foreach ( $posts_dates as $unformatted_date ) {
-                $date = new \DateTime( $unformatted_date);
-                $year = $date->format( 'Y' );
-                $year_array[] = $year;
-                $year_array = array_unique($year_array);
-            }
-        }
-
-        $year_now = Carbon::now()->startOfYear()->format('Y');
-        //year array
-        $year_array = array();
-        $posts_dates = Transaction::orderBy( 'pesanan_dibuat', 'ASC' )->pluck( 'pesanan_dibuat' );
-        $posts_dates = json_decode( $posts_dates );
-
         if ( ! empty( $posts_dates ) ) {
             foreach ( $posts_dates as $unformatted_date ) {
                 $date = new \DateTime( $unformatted_date);
@@ -172,24 +155,25 @@ class RevenueControllerTest extends TestCase
         }
 
         //Percentage Revenue
+        $currentmonth = date('m');
         $total_rev = 0;
-        //current year
+
         $revenue = Transaction::select('amount')->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->
         format('Y'))->get();
         foreach ($revenue as $in)
             $total_rev += $in->amount;
-        //current month
-        $revenue = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
-            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
-        $current_rev = 0;
-        foreach ($revenue as $in)
-            $current_rev += $in->amount;
         //last month
         $revenue_last = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->subMonth()->format('m'))
             ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
         $last_rev = 0;
         foreach ($revenue_last as $in)
             $last_rev += $in->amount;
+
+        $revenue = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
+        $current_rev = 0;
+        foreach ($revenue as $in)
+            $current_rev += $in->amount;
 
         $change_rev = $current_rev - $last_rev;
         if ($change_rev == 0){
@@ -199,153 +183,143 @@ class RevenueControllerTest extends TestCase
             $divide_rev = 0;
         }
         else{
+//            $divide_rev = $change_rev / $last_rev;
             $divide_rev = $change_rev / $last_rev;
         }
+
         //count percentage revenue
         $percentage_rev = $divide_rev * 100;
 
-        $monthly_post_count_array = array();
-        $month_array = $this->getAllMonths();
-        $month_name_array = array();
-        if ( ! empty( $month_array ) ) {
-            foreach ( $month_array as $month_no => $month_name ){
-                $monthly_post_count = $this->getMonthlyPostCount( $month_no);
-                array_push( $monthly_post_count_array, $monthly_post_count );
-                array_push( $month_name_array, $month_name );
-            }
+        //Total Transaction Current Month
+        $month_transaction = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->count();
+        //last month
+        $last_month_transaction = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->subMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->count();
+
+        //Total User
+        $user = User::count();
+
+
+        //Current Average Order Value
+        if ($current_rev == 0){
+            $average_order = 0;
+        }
+        else{
+            $average_order = $current_rev / $month_transaction;
         }
 
-        //revenue change
-        $i = 1;
-        $result_arr0[] = $monthly_post_count_array[0];
-        while ( $i < sizeof($monthly_post_count_array)) {
-            $result_arr1[$i] = $monthly_post_count_array[$i]-$monthly_post_count_array[$i-1];
-            if ($i == sizeof($monthly_post_count_array)-1) {
-                break;
-            }
-            $i++;
+        //Last Avergae Order Value
+        if ($last_rev == 0){
+            $last_average_order = 0;
         }
-        $result = array_merge($result_arr0,$result_arr1);
-
-        $i = 1;
-        $result_arr2[] = $monthly_post_count_array[0];
-        while ( $i < sizeof($monthly_post_count_array)) {
-            if ($monthly_post_count_array[$i-1] == 0){
-                $result_arr1[$i] = 0;
-            }
-            else{
-                $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
-            }
-            if ($i == sizeof($monthly_post_count_array)-1) {
-                break;
-            }
-            $i++;
+        else{
+//            $divide_rev = $change_rev / $last_rev;
+            $last_average_order = $last_rev / $last_month_transaction;
         }
-        $result2 = array_merge($result_arr2,$result_arr1);
 
-        $monthly_post_data_array = array(
-            'months' => $month_name_array,
-            'post_count_data' => $monthly_post_count_array,
-            'revenue_change' => $result,
-            'percentage' => $result2
-        );
-
-        $arr_rev = array($current_rev);
-        $arr_change = array($change_rev);
-        $arr_percent = array($percentage_rev);
-
-        $revenue_data = array(
-            'revenue' => $arr_rev,
-            'change_rev' => $arr_change,
-            'percentage_rev' => $arr_percent
-        );
-//        dd($monthly_post_count_array);
-
-        //check array key revenue in $revenue_data
-        $this->assertArrayHasKey('revenue',$revenue_data);
-        //check array value of $array_rev
-        $this->assertContains(170000,$arr_rev);
-        //check array key change_rev in $revenue_data array
-        $this->assertArrayHasKey('change_rev',$revenue_data);
-        //check array value of $arr_change
-        $this->assertContains(50000,$arr_change);
-        //check array key revenue in $revenue_data array
-        $this->assertArrayHasKey('revenue',$revenue_data);
-        //check value of $percentage_rev
-        $this->assertEquals(41.666666666667,$percentage_rev);
-        //check array key months in $monthly_post_data_array
-        $this->assertArrayHasKey('months',$monthly_post_data_array);
-        //check arrat value of $month_name_array
-        $this->assertContains('Jan',$month_name_array);
-        //check array key post_count_data in $monthly_post_data_array
-        $this->assertArrayHasKey('post_count_data',$monthly_post_data_array);
-        //check array value of $monthly_post_count_array
-        $this->assertContains(170000,$monthly_post_count_array);
-        //check array key revenue_change in $revenue_data array
-        $this->assertArrayHasKey('revenue_change',$monthly_post_data_array);
-        //check array value of $result
-        $this->assertContains(0,$result);
-        //check array key percentage in $revenue_data array
-        $this->assertArrayHasKey('percentage',$monthly_post_data_array);
-        //check array value of $result2
-        $this->assertContains(0,$result2);
-    }
-
-    function getAllMonths(){
-        $month_array = array();
-        $posts_dates = Transaction::orderBy( 'pesanan_dibuat', 'ASC' )->pluck( 'pesanan_dibuat' );
-        $posts_dates = json_decode( $posts_dates );
-
-        if ( ! empty( $posts_dates ) ) {
-            foreach ( $posts_dates as $unformatted_date ) {
-                $date = new \DateTime( $unformatted_date);
-                $month_no = $date->format( 'm' );
-                $month_name = $date->format( 'M' );
-                for ($m=1; $m<=12; ++$m){
-                    $alldate_no = date('m',mktime(0, 0, 0, $m, 1)) ;
-                    $alldate_name = date('M',mktime(0, 0, 0, $m, 1)) ;
-
-                    $all_month[ $alldate_no ] = $alldate_name ;
-                }
-                $month_array[ $month_no ] = $month_name;
-                $month_array = $all_month;
-            }
+        $change_aov = $average_order - $last_average_order;
+        if ($change_rev == 0){
+            $divide_aov = 0;
         }
-        $this->assertEquals('Jul',$month_name);
-        return $month_array;
-    }
+        elseif ($last_average_order == 0) {
+            $divide_aov = 0;
+        }
+        else{
+            $divide_aov = $change_aov / $last_average_order;
+        }
 
-    function getMonthlyPostCount( $month ) {
-        $revenue = Transaction::whereMonth( 'pesanan_dibuat', $month )
+        //count percentage aov
+        $percentage_aov = $divide_aov * 100;
+
+        //customer retention
+        //customer retention this month
+        $retention = Transaction::select('id','user_id')->whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
             ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
-        $current_rev = 0;
-        foreach ($revenue as $in)
-            $current_rev += $in->amount;
-        return $current_rev;
-    }
+        $group_retenteion1 = $retention->groupBy('user_id');
+        $new_total = [];
+        foreach ($group_retenteion1 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total[$total]=sizeof($value);
+            }
 
-    function getMonthlyPostData() {
-        $monthly_post_count_array = array();
-        $month_array = $this->getAllMonths();
-        $month_name_array = array();
-        if ( ! empty( $month_array ) ) {
-            foreach ( $month_array as $month_no => $month_name ){
-                $monthly_post_count = $this->getMonthlyPostCount( $month_no);
-                array_push( $monthly_post_count_array, $monthly_post_count );
-                array_push( $month_name_array, $month_name );
+        }
+        $count_retention_now = count($new_total) ;
+
+        //customer retention last month
+        $retention_last = Transaction::select('id','user_id')->whereMonth('pesanan_dibuat', Carbon::now()->subMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
+
+        $group_retention2 = $retention_last->groupBy('user_id');
+        $new_total2 = [];
+        foreach ($group_retention2 as $total => $value){
+            if(sizeof($value)>1){
+                $new_total2[$total]=sizeof($value);
             }
         }
-        $max_no = max( $monthly_post_count_array );
-//        $max = round(( $max_no + 10/2 ) / 10 ) * 10;
-        $max_length = strlen((string)$max_no);
-        $max_length = $max_length - 2;
-        $max = round($max_no,-$max_length);
-        $monthly_post_data_array = array(
-            'months' => $month_name_array,
-            'post_count_data' => $monthly_post_count_array,
-            'max' => $max,
-        );
-        return $monthly_post_data_array;
+        $count_retention_last = count($new_total2);
+
+        $change_retention = $count_retention_now - $count_retention_last;
+        if ($count_retention_last == 0){
+            $divide_retention = 0;
+        }
+        else{
+            $divide_retention = $change_retention / $count_retention_last;
+        }
+        $percentage_retention = $divide_retention * 100;
+
+        //current customer acqusition
+        $acqusition = Transaction::select('user_id')->whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
+        $acq_now = count($acqusition);
+
+        //customer acqusition last month
+        $acqusition = Transaction::select('user_id')->whereMonth('pesanan_dibuat', Carbon::now()->subMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
+        $acq_last = count($acqusition);
+
+        if ($acq_last == 0){
+            $divide_acq = 0;
+        }
+        else{
+            $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
+        }
+
+        //new product
+        $product = Product::select()->whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
+
+        //rata-rata pengiriman
+        $diterima = Transaction::whereMonth('pesanan_dibuat', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('pesanan_dibuat', Carbon::now()->startOfYear()->format('Y'))->get();
+        $waktu = [];
+        foreach ($diterima as $total => $value ){
+            $dibuat = Carbon::parse($value->pesanan_dibuat);
+            $waktu_diterima = Carbon::parse($value->pesanan_diterima);
+            $waktu[$total]= $dibuat->diffInSeconds($waktu_diterima);
+        }
+
+        $total_waktu = 0;
+        foreach ($waktu as $total){
+            $total_waktu += $total;
+        }
+        $jumlah_transaksi = count($diterima);
+        $rata2 = $total_waktu/$jumlah_transaksi;
+        $selisih = CarbonInterval::seconds($rata2)->cascade()->forHumans();
+
+//        dd($selisih);
+
+//        dd($selisih,$percentage_retention,$divide_acq,$product,$percentage_rev,$current_rev,$percentage_aov,$average_order);
+
+        $this->assertEquals('3 days 6 hours',$selisih);
+        $this->assertEquals(100,$percentage_retention);
+        $this->assertEquals(50,$divide_acq);
+        $this->assertEquals(0,$product);
+        $this->assertEquals(41.666666666667,$percentage_rev);
+        $this->assertEquals(170000,$current_rev);
+        $this->assertEquals(-15.0,$percentage_aov);
+        $this->assertEquals(34000,$average_order);
+
 
     }
 }

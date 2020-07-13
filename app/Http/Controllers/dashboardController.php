@@ -165,27 +165,4 @@ class dashboardController extends Controller
             ->with('count_retention_last',$count_retention_last)->with('percentage_retention',$percentage_retention)->with('divide_acq',$divide_acq)
             ->with('year_now',$year_now)->with('product',$product)->with('rata_hari',$selisih);
     }
-
-    public function revenue(){
-
-        $revenue_last = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
-        $last_rev = 0;
-        foreach ($revenue_last as $in)
-            $last_rev += $in->amount;
-
-        $revenue = Transaction::whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
-                    ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
-        $current_rev = 0;
-        foreach ($revenue as $in)
-            $current_rev += $in->amount;
-
-        $change_rev = $current_rev - $last_rev;
-        $divide_rev = $change_rev / $last_rev;
-        $percentage_rev = $divide_rev * 100;
-
-        return number_format($percentage_rev, 2);
-
-    }
-
 }

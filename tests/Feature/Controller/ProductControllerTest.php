@@ -1,18 +1,92 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Tests\Feature\Controller;
 
-use App\Transaction;
+use App\Brand;
+use App\Categories;
+use App\Product;
+use App\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
-class customerretentionController extends Controller
+class ProductControllerTest extends TestCase
 {
-    public function index(){
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+    use RefreshDatabase;
+    public function testExample()
+    {
+        $cat = Categories::create([
+            'title' => 'Kerajinan Tangan',
+        ]);
+        $cat = Categories::create([
+            'title' => 'Anyaman',
+        ]);
+        $brand = Brand::create([
+            'title' => 'ArtCart'
+        ]);
+        $user = User::create([
+            'name' => 'ArtCart',
+            'email' => 'admin@artcart.com',
+            'password' => Hash::make('admin12345'),
+            'dob'=> '1998-02-10',
+            'gender'=> 'M',
+            'balance' => '500000',
+            'phone_num' => '85938369897',
+            'bio' => 'Admin Account',
+            'home_address' => 'Ciganitri',
+            'admin' => 1
+        ]);
+        Product::create([
+            'cat_id' => 1,
+            'brand_id' => 1,
+            'user_id' => 1,
+            'qty' => 2,
+            'title' => 'Anyaman Rotan',
+            'price' => 50000,
+            'description' => 'Anyaman Rotan',
+            'image' => 'products/Artcart/anyaman.jpg',
+            'keyword' => 'Anyaman Rotan',
+            'special' => 0,
+            'status' => rand(1,4)
+        ]);
+        Product::create([
+            'cat_id' => 1,
+            'brand_id' => 1,
+            'user_id' => 1,
+            'qty' => 2,
+            'title' => 'Anyaman Rotan',
+            'price' => 50000,
+            'description' => 'Anyaman Rotan',
+            'image' => 'products/Artcart/anyaman.jpg',
+            'keyword' => 'Anyaman Rotan',
+            'special' => 0,
+            'status' => rand(1,4)
+        ]);
+        Product::create([
+            'cat_id' => 1,
+            'brand_id' => 1,
+            'user_id' => 1,
+            'qty' => 2,
+            'title' => 'Anyaman Rotan',
+            'price' => 50000,
+            'description' => 'Anyaman Rotan',
+            'image' => 'products/Artcart/anyaman.jpg',
+            'keyword' => 'Anyaman Rotan',
+            'special' => 0,
+            'status' => rand(1,4)
+        ]);
+
         $year_now = Carbon::now()->startOfYear()->format('Y');
         //year array
         $year_array = array();
-        $posts_dates = Transaction::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
+        $posts_dates = Product::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
         $posts_dates = json_decode( $posts_dates );
 
         if ( ! empty( $posts_dates ) ) {
@@ -24,35 +98,23 @@ class customerretentionController extends Controller
             }
         }
 
-        //customer retention
-        //customer retention this month
-        $retention = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
-        $group_retenteion1 = $retention->groupBy('user_id');
-        $new_total = [];
-        foreach ($group_retenteion1 as $total => $value){
-            if(sizeof($value)>1){
-                $new_total[$total]=sizeof($value);
-            }
+        //current customer acqusition
+        $product = Product::select()->whereMonth('created_at', Carbon::now()->startOfMonth()->format('m'))
+            ->whereYear('created_at', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
+
+        //customer acqusition last month
+        $product_last = Product::select()->whereMonth('created_at', Carbon::now()->startOfMonth()->format('m'))
+            ->whereMonth('created_at', Carbon::now()->startOfYear()->format('Y'))->distinct()->count();
+
+        if ($product == 0){
+            $divide_prod = 0;
         }
-        $count_retention_now = count($new_total);
-
-        //customer retention last month
-        $retention_last = Transaction::select('id','user_id')->whereRaw('MONTH(created_at) = ?', Carbon::now()->subMonth()->format('m'))
-            ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
-
-        $group_retention2 = $retention_last->groupBy('user_id');
-        $new_total2 = [];
-        foreach ($group_retention2 as $total => $value){
-            if(sizeof($value)>1){
-                $new_total2[$total]=sizeof($value);
-            }
+        elseif ($product_last == 0){
+            $divide_prod = 0;
         }
-        $count_retention_last = count($new_total2);
-
-        $change_retention = $count_retention_now - $count_retention_last;
-        $divide_retention = $change_retention / $count_retention_last;
-        $percentage_retention = $divide_retention * 100;
+        else{
+            $divide_prod = ($product-$product_last) / $product_last*100;
+        }
 
         $monthly_post_count_array = array();
         $month_array = $this->getAllMonths();
@@ -97,17 +159,37 @@ class customerretentionController extends Controller
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
-            'retention_change' => $result,
+            'product_change' => $result,
             'percentage' => $result2
         );
 
-        return view('customerretention')->with('retention_now',$count_retention_now)->with('percentage_retention',$percentage_retention)
-            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array)->with('month_data',$result);
+        //check values of $count_retention_now
+        $this->assertEquals(3,$product);
+        //check values of percentage
+        $this->assertEquals(0,$divide_prod);
+
+        //check array key months in $monthly_post_data_array
+        $this->assertArrayHasKey('months',$monthly_post_data_array);
+        //check arrat value of $month_name_array
+        $this->assertContains('Jan',$month_name_array);
+        //check array key post_count_data in $monthly_post_data_array
+        $this->assertArrayHasKey('post_count_data',$monthly_post_data_array);
+        //check array value of $monthly_post_count_array
+        $this->assertContains(3,$monthly_post_count_array);
+        //check array key product_change in $revenue_data array
+        $this->assertArrayHasKey('product_change',$monthly_post_data_array);
+        //check array value of $result
+        $this->assertContains(0,$result);
+        //check array key percentage in $revenue_data array
+        $this->assertArrayHasKey('percentage',$monthly_post_data_array);
+        //check array value of $result2
+        $this->assertContains(0,$result2);
+
     }
 
     function getAllMonths(){
         $month_array = array();
-        $posts_dates = Transaction::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
+        $posts_dates = Product::orderBy( 'created_at', 'ASC' )->pluck( 'created_at' );
         $posts_dates = json_decode( $posts_dates );
 
         if ( ! empty( $posts_dates ) ) {
@@ -123,28 +205,19 @@ class customerretentionController extends Controller
                 }
                 $month_array[ $month_no ] = $month_name;
                 $month_array = $all_month;
+
             }
         }
-
         return $month_array;
     }
 
 
     function getMonthlyPostCount( $month ) {
 
-        //customer retention this month
-        $monthly_post_count = Transaction::select('id','user_id')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))
-            ->whereMonth( 'created_at', $month )->get();
-        $group_retention1 = $monthly_post_count ->groupBy('user_id');
-        $new_total = [];
-        foreach ($group_retention1 as $total => $value){
-            if(sizeof($value)>1){
-                $new_total[$total]=sizeof($value);
-            }
-        }
-        $count_retention_now = count($new_total);
-
-        return $count_retention_now;
+        //current customer acqusition
+        $product = Product::select()->whereMonth( 'created_at', $month )->whereYear('created_at', Carbon::now()->startOfYear()
+            ->format('Y'))->distinct()->count();
+        return $product;
     }
 
     function getMonthlyPostData() {
@@ -160,7 +233,7 @@ class customerretentionController extends Controller
         }
 
         $max_no = max( $monthly_post_count_array );
-        $max = round(( $max_no + 10/2 ) / 10 ) * 10 ;
+        $max = round(( $max_no + 10/2 ) / 10 ) * 10;
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
@@ -174,10 +247,10 @@ class customerretentionController extends Controller
     function getYearPostCount( $month , $year) {
 
         if ($year == null){
-            $monthly_post_count = Transaction::whereMonth( 'created_at', $month )->count();
+            $monthly_post_count = Product::whereMonth( 'created_at', $month )->count();
         }
         else {
-            $monthly_post_count = Transaction::whereRaw('substr(created_at,1,4) ='.$year)->whereMonth( 'created_at', $month )->get()->count();
+            $monthly_post_count = Product::whereYear('substr(created_at,1,4) ='.$year)->whereMonth( 'created_at', $month )->get()->count();
         }
         return $monthly_post_count;
     }
@@ -204,4 +277,6 @@ class customerretentionController extends Controller
 
         return $monthly_post_data_array;
     }
+
+
 }

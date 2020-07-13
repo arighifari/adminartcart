@@ -115,7 +115,7 @@
                                                 <td>{{$no++}}</td>
                                                 <td>{{$data}}</td>
                                                 <td>{{$data_table['post_count_data'][$key]}}</td>
-                                                <td>{{$data_table['revenue_change'][$key]}}</td>
+                                                <td>{{$data_table['retention_change'][$key]}}</td>
                                                 <td>{{number_format($data_table['percentage'][$key],2)}} %</td>
                                             </tr>
                                         @endforeach

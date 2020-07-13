@@ -75,8 +75,6 @@ class revenueController extends Controller
         $i = 1;
         $result_arr2[] = $monthly_post_count_array[0];
         while ( $i < sizeof($monthly_post_count_array)) {
-//            $result_arr1[$i] = 0;
-//            $result_arr1[$i] = ($monthly_post_count_array[$i]-$monthly_post_count_array[$i-1])/$monthly_post_count_array[$i-1]*100;
             if ($monthly_post_count_array[$i-1] == 0){
                 $result_arr1[$i] = 0;
             }
@@ -111,7 +109,7 @@ class revenueController extends Controller
 //        return ($revenue_data);
 
         return view('revenue')->with('revenue',$revenue_data)->with('year_array',$year_array)->with('year_now',$year_now)
-            ->with('data_table',$monthly_post_data_array)->with('month_data',$result);
+            ->with('data_table',$monthly_post_data_array);
     }
 
     function getAllMonths(){
@@ -132,7 +130,6 @@ class revenueController extends Controller
                 }
                 $month_array[ $month_no ] = $month_name;
                 $month_array = $all_month;
-
             }
         }
         return $month_array;
@@ -140,15 +137,11 @@ class revenueController extends Controller
 
 
     function getMonthlyPostCount( $month ) {
-
-
         $revenue = Transaction::whereMonth( 'created_at', $month )
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->get();
         $current_rev = 0;
         foreach ($revenue as $in)
             $current_rev += $in->amount;
-//        $acq_now = count($acqusition);
-
         return $current_rev;
     }
 
@@ -174,9 +167,7 @@ class revenueController extends Controller
             'post_count_data' => $monthly_post_count_array,
             'max' => $max,
         );
-
         return $monthly_post_data_array;
-
     }
 
     function getYearPostCount( $month , $year) {

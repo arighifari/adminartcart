@@ -23,8 +23,6 @@ class plagiatController extends Controller
             $ditolak]
         );
 
-//        $data_array2 = json_encode($data_array);
-
         return $data_array;
     }
 }
