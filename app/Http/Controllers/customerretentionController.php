@@ -51,7 +51,12 @@ class customerretentionController extends Controller
         $count_retention_last = count($new_total2);
 
         $change_retention = $count_retention_now - $count_retention_last;
-        $divide_retention = $change_retention / $count_retention_last;
+        if ($count_retention_last == 0){
+            $divide_retention = 0;
+        }
+        else{
+            $divide_retention = $change_retention / $count_retention_last;
+        }
         $percentage_retention = $divide_retention * 100;
 
         $monthly_post_count_array = array();

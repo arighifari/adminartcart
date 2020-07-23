@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
 
 class dashboardController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function dashboard(){
 
         $transaction = Order::count();
@@ -59,7 +64,15 @@ class dashboardController extends Controller
             $current_rev += $in->amount;
 
         $change_rev = $current_rev - $last_rev;
-        $divide_rev = $change_rev / $last_rev;
+        if ($change_rev == 0){
+            $divide_rev = 0;
+        }
+        elseif ($last_rev == 0) {
+            $divide_rev = 0;
+        }
+        else{
+            $divide_rev = $change_rev / $last_rev;
+        }
         //count percentage revenue
         $percentage_rev = $divide_rev * 100;
 
@@ -86,9 +99,26 @@ class dashboardController extends Controller
         }
 
         //Last Avergae Order Value
-        $last_average_order = $last_rev / $last_month_transaction;
+        if ($last_rev == 0){
+            $last_average_order = 0;
+        }
+        else{
+            $last_average_order = $last_rev / $last_month_transaction;
+        }
+
         $change_aov = $average_order - $last_average_order;
-        $divide_aov = $change_aov / $last_average_order;
+
+        if ($change_rev == 0){
+            $divide_aov = 0;
+        }
+        elseif ($last_average_order == 0) {
+            $divide_aov = 0;
+        }
+        else{
+            $divide_aov = $change_aov / $last_average_order;
+        }
+
+
         //count percentage aov
         $percentage_aov = $divide_aov * 100;
 
@@ -118,9 +148,13 @@ class dashboardController extends Controller
             }
         }
         $count_retention_last = count($new_total2);
-
         $change_retention = $count_retention_now - $count_retention_last;
-        $divide_retention = $change_retention / $count_retention_last;
+        if ($count_retention_last == 0){
+            $divide_retention = 0;
+        }
+        else{
+            $divide_retention = $change_retention / $count_retention_last;
+        }
         $percentage_retention = $divide_retention * 100;
 
         //current customer acqusition
@@ -133,7 +167,12 @@ class dashboardController extends Controller
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
         $acq_last = count($acqusition);
 
-        $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
+        if ($acq_last == 0){
+            $divide_acq = 0;
+        }
+        else{
+            $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
+        }
 
         //new product
         $product = Product::select()->whereRaw('MONTH(created_at) = ?', Carbon::now()->startOfMonth()->format('m'))
@@ -155,7 +194,11 @@ class dashboardController extends Controller
             $total_waktu += $total;
         }
         $jumlah_transaksi = count($diterima);
-        $rata2 = $total_waktu/$jumlah_transaksi;
+        if ($total_waktu == 0){
+            $rata2 = 0;
+        }else{
+            $rata2 = $total_waktu/$jumlah_transaksi;
+        }
         $selisih = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
 

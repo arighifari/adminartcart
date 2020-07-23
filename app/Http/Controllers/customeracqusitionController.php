@@ -34,7 +34,12 @@ class customeracqusitionController extends Controller
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->distinct()->get();
         $acq_last = count($acqusition);
 
-        $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
+        if ($acq_last == 0){
+            $divide_acq = 0;
+        }
+        else{
+            $divide_acq = ($acq_now-$acq_last) / $acq_last *100;
+        }
 
         $monthly_post_count_array = array();
         $month_array = $this->getAllMonths();

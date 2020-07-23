@@ -204,7 +204,8 @@
                                     <!-- /.col -->
                                     <div class="col-sm-3 col-6">
                                         <div class="description-block border-right">
-                                            <span class="description-percentage text-danger"> @if($percentage_aov > 0)<i class="fas fa-caret-up"></i> @elseif($percentage_aov == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_aov,2)}}%</span>
+                                            <span class="description-percentage @if($percentage_aov > 0) text-success @elseif($percentage_aov == 0) text-yellow @else text-danger @endif">
+                                                @if($percentage_aov > 0)<i class="fas fa-caret-up"></i> @elseif($percentage_aov == 0) <i class="fas fa-caret-left"></i> @else <i class="fas fa-caret-down"></i> @endif {{number_format($percentage_aov,2)}}%</span>
                                             <h5 class="description-header">Rp. {{number_format($average_order)}}</h5>
                                             <a style="color: black" href="{{route('averageorder')}}"><span class="description-text">Average Order Value</span></a>
                                         </div>

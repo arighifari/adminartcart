@@ -54,22 +54,28 @@
         {{--</form>--}}
 
         <!-- Right navbar links -->
+        @auth
         <ul class="navbar-nav ml-auto">
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
-                    Halo,
+                    Halo {{ Auth::user()->name }},
                     <i class="far fa-user"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt mr-2"></i> Logout
                     </a>
 
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
                 </div>
             </li>
         </ul>
+            @endauth
     </nav>
     <!-- /.navbar -->
 

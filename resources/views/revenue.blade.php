@@ -48,10 +48,10 @@
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
                                                 @foreach($revenue['revenue'] as $key => $data)
-                                                    <h5 class="description-header">Rp. {{number_format($revenue['percentage_rev'][$key],2)}}</h5>
+                                                    <h5 class="description-header">{{number_format($revenue['percentage_rev'][$key],2)}} %</h5>
                                                 @endforeach
                                                 {{--<h5 class="description-header">{{number_format($percentage_rev,2)}} %</h5>--}}
-                                                <span class="description-text">Revenue Percent Change</span>
+                                                <span class="description-text">Percentage Revenue Change</span>
                                             </div>
                                             <!-- /.description-block -->
                                         </div>

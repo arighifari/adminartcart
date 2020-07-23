@@ -8,19 +8,24 @@ use Illuminate\Http\Request;
 class plagiatController extends Controller
 {
     public function index(){
-        $diterima = Product::select('status')->where('status',1)->get()->count();
-        $dievaluasi = Product::select('status')->where('status',2)->get()->count();
-        $dibanding = Product::select('status')->where('status',3)->get()->count();
-        $ditolak = Product::select('status')->where('status',4)->get()->count();
+        $pending = Product::select('status')->where('status',0)->get()->count();
+        $ditolak = Product::select('status')->where('status',1)->get()->count();
+        $diterima = Product::select('status')->where('status',2)->get()->count();
+        $dibanding = Product::select('status')->where('status',4)->get()->count();
+        $banding_ditolak = Product::select('status')->where('status',4)->get()->count();
+        $banding_diterima = Product::select('status')->where('status',5)->get()->count();
 
 //        dd($diterima,$dievaluasi,$dibanding,$ditolak);
 
         $data_array = array(
             'data'=> [
-            $diterima,
-            $dievaluasi,
-            $dibanding,
-            $ditolak]
+                $pending,
+                $ditolak,
+                $diterima,
+                $dibanding,
+                $banding_ditolak,
+                $banding_diterima
+            ]
         );
 
         return $data_array;

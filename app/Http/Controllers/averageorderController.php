@@ -45,7 +45,6 @@ class averageorderController extends Controller
             ->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))->count();
 
         //Current Average Order Value
-
         if ($current_rev == 0){
             $average_order = 0;
         }
@@ -54,9 +53,21 @@ class averageorderController extends Controller
         }
 
         //Last Avergae Order Value
-        $last_average_order = $last_rev / $last_month_transaction;
+        if ($last_rev== 0){
+            $last_average_order = 0;
+        }
+        else{
+            $last_average_order = $last_rev / $last_month_transaction;
+        }
         $change_aov = $average_order - $last_average_order;
-        $divide_aov = $change_aov / $last_average_order;
+
+        if ($last_average_order== 0){
+            $divide_aov = 0;
+        }
+        else{
+            $divide_aov = $change_aov / $last_average_order;
+        }
+
         //count percentage aov
         $percentage_aov = $divide_aov * 100;
         //Current Average Order Value
@@ -67,12 +78,36 @@ class averageorderController extends Controller
             $average_order = $current_rev / $month_transaction;
         }
 
-        //Last Avergae Order Value
-        $last_average_order = $last_rev / $last_month_transaction;
+        //Last Average Order Value
+        if ($last_month_transaction == 0){
+            $last_average_order = 0;
+        }
+        else{
+            $last_average_order = $last_rev / $last_month_transaction;
+        }
         $change_aov = $average_order - $last_average_order;
-        $divide_aov = $change_aov / $last_average_order;
-        //count percentage aov
+        if ($last_average_order == 0){
+            $divide_aov = 0;
+        }
+        else{
+            $divide_aov = $change_aov / $last_average_order;
+        }
 
+        //count percentage aov
+        $percentage_aov = $divide_aov * 100;
+        //Current Average Order Value
+        if ($current_rev == 0){
+            $average_order = 0;
+        }
+        else{
+            $average_order = $current_rev / $month_transaction;
+        }
+//
+//        //Last Avergae Order Value
+//        $last_average_order = $last_rev / $last_month_transaction;
+//        $change_aov = $average_order - $last_average_order;
+//        $divide_aov = $change_aov / $last_average_order;
+        //count percentage aov
         $percentage_aov = $divide_aov * 100;
 
         $monthly_post_count_array = array();
@@ -190,10 +225,7 @@ class averageorderController extends Controller
         }
 
         $max_no = max( $monthly_post_count_array );
-//        $max = round(( $max_no + 10/2 ) / 10 ) * 10;
-        $max_length = strlen((string)$max_no);
-        $max_length = $max_length - 1;
-        $max = round($max_no,-$max_length);
+        $max = round(( $max_no + 10/2 ) / 10 ) * 10 ;
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,

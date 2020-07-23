@@ -37,18 +37,22 @@
                 type: 'pie',
                 data: {
                     labels: [
+                        "Produk Pending",
+                        "Produk Ditolak",
                         "Produk Diterima",
-                        "Produk Dievaluasi",
                         "Produk Dibanding",
-                        "Produk Ditolak"
+                        "Produk Banding Ditolak",
+                        "Produk Banding Diterima"
                     ],
                     datasets: [
                         {
                             data: response.data,
                             backgroundColor: [
-                                "#FF6384",
                                 "#63FF84",
-                                "#84FF63",
+                                "#FF6384",
+                                "#006BB4",
+                                "#4A8F52",
+                                "#9E0000",
                                 "#8463FF"
                             ]
                         }]

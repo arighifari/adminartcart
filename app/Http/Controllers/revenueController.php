@@ -45,7 +45,15 @@ class revenueController extends Controller
             $last_rev += $in->amount;
 
         $change_rev = $current_rev - $last_rev;
-        $divide_rev = $change_rev / $last_rev;
+        if ($change_rev == 0){
+            $divide_rev = 0;
+        }
+        elseif ($last_rev == 0) {
+            $divide_rev = 0;
+        }
+        else{
+            $divide_rev = $change_rev / $last_rev;
+        }
         //count percentage revenue
         $percentage_rev = $divide_rev * 100;
 
