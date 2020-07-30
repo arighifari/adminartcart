@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Order;
 use App\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,6 +53,19 @@ class customeracqusitionController extends Controller
             }
         }
 
+        $monthly_post_array = array();
+        $month_array = $this->getAllMonths();
+        $month_name_array = array();
+        if (!empty($month_array)) {
+            foreach ($month_array as $month_no => $month_name) {
+                $monthly_post = $this->getMonthlyCount($month_no);
+                array_push($monthly_post_array, $monthly_post);
+                array_push($month_name_array, $month_name);
+            }
+        }
+
+//        dd($monthly_post_array);
+
         $i = 1;
         $result_arr0[] = $monthly_post_count_array[0];
         while ( $i < sizeof($monthly_post_count_array)) {
@@ -61,7 +75,7 @@ class customeracqusitionController extends Controller
             }
             $i++;
         }
-        $result = array_merge($result_arr0,$result_arr1);
+        $result = array_merge([0],$result_arr1);
 
         $i = 1;
         $result_arr2[] = $monthly_post_count_array[0];
@@ -77,17 +91,19 @@ class customeracqusitionController extends Controller
             }
             $i++;
         }
-        $result2 = array_merge($result_arr2,$result_arr1);
+        $result2 = array_merge([0],$result_arr1);
 
         $monthly_post_data_array = array(
             'months' => $month_name_array,
             'post_count_data' => $monthly_post_count_array,
             'acqusition_change' => $result,
-            'percentage' => $result2
+            'percentage' => $result2,
+            'desc' => $monthly_post_array
         );
 
         return view('customeracqusition')->with('acq_now',$acq_now)->with('percentage_acq',$divide_acq)
-            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array)->with('month_data',$result);
+            ->with('year_array',$year_array)->with('year_now',$year_now)->with('data_table',$monthly_post_data_array)
+            ->with('month_data',$result)->with('description',$monthly_post_array);
     }
 
     function getAllMonths(){
@@ -123,6 +139,20 @@ class customeracqusitionController extends Controller
         $acq_now = count($acqusition);
 
         return $acq_now;
+    }
+
+    function getMonthlyCount( $month ) {
+
+        //current customer acqusition
+        $acqusition = Transaction::with('users')->select('id','user_id')->whereRAW('YEAR(created_at) = ?', Carbon::now()->startOfYear()->format('Y'))
+            ->whereMonth( 'created_at', $month )->distinct()->get();
+        $total = [];
+        foreach ($acqusition as $keys => $val){
+            $name = $val['users']['name'];
+            $merchant = Order::with('products.users')->where('transaction_id',$val->id)->first()->products->users->name;
+            $total[$name]=$merchant;
+        }
+        return $total;
     }
 
     function getMonthlyPostData() {

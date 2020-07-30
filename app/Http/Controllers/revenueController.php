@@ -78,7 +78,7 @@ class revenueController extends Controller
             }
             $i++;
         }
-        $result = array_merge($result_arr0,$result_arr1);
+        $result = array_merge([0],$result_arr1);
 
         $i = 1;
         $result_arr2[] = $monthly_post_count_array[0];
@@ -94,7 +94,7 @@ class revenueController extends Controller
             }
             $i++;
         }
-        $result2 = array_merge($result_arr2,$result_arr1);
+        $result2 = array_merge([0],$result_arr1);
 
         $monthly_post_data_array = array(
             'months' => $month_name_array,

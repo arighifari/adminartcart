@@ -34,6 +34,8 @@ class DiffTimeController extends Controller
         else{
             $rata2 = $total_waktu/$jumlah_transaksi;
         }
+        $rata2 = number_format($rata2,0,'.','');
+
         $selisih1 = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
         //hitung selisih proses
@@ -55,6 +57,8 @@ class DiffTimeController extends Controller
         else{
             $rata2 = $total_waktu/$jumlah_transaksi;
         }
+        $rata2 = number_format($rata2,0,'.','');
+
         $selisih2 = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
         //hitung selisih dikirim
@@ -76,6 +80,7 @@ class DiffTimeController extends Controller
         else{
             $rata2 = $total_waktu/$jumlah_transaksi;
         }
+        $rata2 = number_format($rata2,0,'.','');
         $selisih3 = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
         //hitung selisih diterima
@@ -97,6 +102,7 @@ class DiffTimeController extends Controller
         else{
             $rata2 = $total_waktu/$jumlah_transaksi;
         }
+        $rata2 = number_format($rata2,0,'.','');
         $selisih4 = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
         return view('SelisihWaktu')->with('selisih1',$selisih1)->with('selisih2',$selisih2)->with('selisih3',$selisih3)->

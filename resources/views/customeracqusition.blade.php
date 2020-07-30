@@ -23,10 +23,11 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="card-footer">
+                                    <h5 style="text-align: center">Customer Retention This Month</h5>
                                     <div class="row">
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">{{number_format($acq_now)}}</h5>
+                                                <h5 class="description-header">{{number_format($acq_now)}} Customer</h5>
                                                 <span class="description-text">Customer Acqusition</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -98,7 +99,8 @@
                         <div class="card">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table s-0">
+                                    <h3 style="text-align: center">Customer Retention This Year</h3>
+                                    <table class="table table-striped s-0">
                                         <thead>
                                         <tr>
                                             <th>No</th>
@@ -111,12 +113,22 @@
                                         <tbody>
                                         @php($no=1)
                                         @foreach($data_table['months'] as $key => $data)
-                                            <tr>
-                                                <td>{{$no++}}</td>
+                                            <tr class="data_accordion" data-id="{{$no}}">
+                                                <td>{{$no}}</td>
                                                 <td>{{$data}}</td>
-                                                <td>{{$data_table['post_count_data'][$key]}}</td>
-                                                <td>{{$data_table['acqusition_change'][$key]}}</td>
+                                                <td>{{$data_table['post_count_data'][$key]}} Customer</td>
+                                                <td>{{$data_table['acqusition_change'][$key]}} Customer</td>
                                                 <td>{{$data_table['percentage'][$key]}} %</td>
+                                            </tr>
+                                            <tr class="accordion-hide" id="{{$no}}">
+                                                <td colspan="">
+                                                    <ul>
+                                                        @foreach($description[$no-1] as $keys => $val)
+                                                            <li>Customer : {{$keys}} Melakukan Pembelian Ditoko : {{$val}}</li>
+                                                        @endforeach
+                                                        {{--@php($no++)--}}
+                                                    </ul>
+                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -135,4 +147,20 @@
     <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
     <script src="{{url( 'assets/dashboard-chart/acqusition-chart.js' )}}"></script>
 
+    <script>
+        $(document).ready(function () {
+            $('.data_accordion').on('click', function () {
+                var id = $(this).data('id');
+                var acc = $('#'+id);
+                if (acc.hasClass('accordion-show')) {
+                    acc.removeClass('accordion-show');
+                    acc.addClass('accordion-hide');
+                } else {
+                    acc.removeClass('accordion-hide');
+                    acc.addClass('accordion-show');
+                }
+
+            })
+        });
+    </script>
 @endsection

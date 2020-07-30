@@ -43,6 +43,8 @@ Route::get('/get-total-retention' , 'customerretentionController@getAllMonths');
 Route::get('/get-retention-chart-data', 'customerretentionController@getMonthlyPostData');
 Route::get('/get-retention-chart-data/{year}', 'customerretentionController@getYearPostData');
 
+Route::get('test/get-retention-chart-data/{month}/{year}', 'customerretentionController@getYearPostCount');
+
 Route::get('/acqusition', 'customeracqusitionController@transaction');
 Route::get('/get-total-acqusition' , 'customeracqusitionController@getAllMonths');
 Route::get('/get-acqusition-chart-data', 'customeracqusitionController@getMonthlyPostData');
@@ -62,4 +64,13 @@ Route::get('/time', 'DiffTimeController@index')->name('time');
 
 Route::get('/product_plagiat', 'plagiatController@index')->name('plagiat');
 Route::get('/get-plagiat-chart-data', 'plagiatController@index');
+
+Route::prefix('/test', function () {
+
+});
+
+Route::get('testing/getmonth/{year}/{month}', 'customerretentionController@getMonthlyCount');
+Route::get('testing/acq/{month}', 'customeracqusitionController@getMonthlyCount');
+
+
 

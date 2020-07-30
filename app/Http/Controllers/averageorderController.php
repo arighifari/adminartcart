@@ -102,12 +102,6 @@ class averageorderController extends Controller
         else{
             $average_order = $current_rev / $month_transaction;
         }
-//
-//        //Last Avergae Order Value
-//        $last_average_order = $last_rev / $last_month_transaction;
-//        $change_aov = $average_order - $last_average_order;
-//        $divide_aov = $change_aov / $last_average_order;
-        //count percentage aov
         $percentage_aov = $divide_aov * 100;
 
         $monthly_post_count_array = array();
@@ -130,7 +124,7 @@ class averageorderController extends Controller
             }
             $i++;
         }
-        $result = array_merge($result_arr0,$result_arr1);
+        $result = array_merge([0],$result_arr1);
 
         $i = 1;
         $result_arr2[] = $monthly_post_count_array[0];
@@ -148,7 +142,7 @@ class averageorderController extends Controller
             }
             $i++;
         }
-        $result2 = array_merge($result_arr2,$result_arr1);
+        $result2 = array_merge([0],$result_arr1);
 
         $monthly_post_data_array = array(
             'months' => $month_name_array,

@@ -23,10 +23,11 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="card-footer">
+                                    <h5  style="text-align: center">Customer Retention This Month</h5>
                                     <div class="row">
                                         <div class="col-sm-3 col-6">
                                             <div class="description-block border-right">
-                                                <h5 class="description-header">{{number_format($retention_now)}}</h5>
+                                                <h5 class="description-header">{{number_format($retention_now)}} Customer</h5>
                                                 <span class="description-text">Customer Retention</span>
                                             </div>
                                             <!-- /.description-block -->
@@ -98,7 +99,8 @@
                         <div class="card">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table s-0">
+                                    <h3 style="text-align: center">Customer Retention This Year</h3>
+                                    <table class="table table-striped s-0">
                                         <thead>
                                         <tr>
                                             <th>No</th>
@@ -111,12 +113,30 @@
                                         <tbody>
                                         @php($no=1)
                                         @foreach($data_table['months'] as $key => $data)
-                                            <tr>
-                                                <td>{{$no++}}</td>
+                                            <tr class="data_accordion" data-id="{{$no}}">
+                                                <td>{{$no}}</td>
                                                 <td>{{$data}}</td>
-                                                <td>{{$data_table['post_count_data'][$key]}}</td>
-                                                <td>{{$data_table['retention_change'][$key]}}</td>
+                                                <td>{{$data_table['post_count_data'][$key]}} Customer</td>
+                                                <td>{{$data_table['retention_change'][$key]}} Customer</td>
                                                 <td>{{number_format($data_table['percentage'][$key],2)}} %</td>
+                                            </tr>
+                                            <tr class="accordion-hide" id="{{$no}}">
+                                                <td colspan="">
+                                                    <ul style="list-style: none;">
+                                                        @foreach($description[$no-1] as $keys => $val)
+                                                            <li>Customer : {{$keys}}</li>
+                                                        @endforeach
+                                                        {{--@php($no++)--}}
+                                                    </ul>
+                                                </td>
+                                                <td colspan="">
+                                                    <ul style="list-style: none;">
+                                                        @foreach($description[$no-1] as $keys => $val)
+                                                            <li>{{$val}} Kali transaksi</li>
+                                                        @endforeach
+                                                        @php($no++)
+                                                    </ul>
+                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -134,5 +154,37 @@
     <script src="{{url( 'assets/chart.js/jquery.min.js' )}}"></script>
     <script src="{{url( 'assets/chart.js/Chart.min.js' )}}"></script>
     <script src="{{url( 'assets/dashboard-chart/customerretention-chart.js' )}}"></script>
+    <script src="{{url( 'assets/dashboard-chart/year_retention.js' )}}"></script>
+    <script>
+        $(document).ready(function(){
+            $('#tahun').change(function(){
+                var year_filter = $('#tahun').val();
+                $.ajax({
+                    type: 'GET',
+                    url: window.location('/get-retention-chart-data/'+year_filter),
+                    data: {year_filter:year_filter},
+                    success: function(response){
+                        $('#retention-Chart').html(response);
+                    }
+                })
+            })
+        });
+
+        $(document).ready(function () {
+            $('.data_accordion').on('click', function () {
+                var id = $(this).data('id');
+                var acc = $('#'+id);
+                if (acc.hasClass('accordion-show')) {
+                    acc.removeClass('accordion-show');
+                    acc.addClass('accordion-hide');
+                } else {
+                    acc.removeClass('accordion-hide');
+                    acc.addClass('accordion-show');
+                }
+
+            })
+        });
+        // var acc = document.getElementsByClassName()
+    </script>
 
 @endsection

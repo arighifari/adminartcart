@@ -14,16 +14,16 @@
 
             $('#tahun').change(function(){
                 var year_filter = $('#tahun').val();
-                var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-transaction-chart-data/'+year_filter;
+                var urlPath =  'http://' + window.location.hostname + ':8080' + '/get-retention-chart-data/'+year_filter;
                 var request = $.ajax( {
                     method: 'GET',
                     url: urlPath
-            } );
+                } );
 
-            request.done( function ( response ) {
-                console.log( response );
-                charts.createCompletedJobsChart( response );
-            });
+                request.done( function ( response ) {
+                    console.log( response );
+                    charts.createCompletedJobsChart( response );
+                });
             });
 
         },
@@ -33,7 +33,7 @@
          */
         createCompletedJobsChart: function ( response ) {
 
-            var ctx = document.getElementById("transaction-Chart");
+            var ctx = document.getElementById("retention-Chart");
             //clear old chart data
             if(window.bar != undefined)
                 window.bar  .destroy();

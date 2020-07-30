@@ -199,6 +199,7 @@ class dashboardController extends Controller
         }else{
             $rata2 = $total_waktu/$jumlah_transaksi;
         }
+        $rata2 = number_format($rata2,0,'.','');
         $selisih = CarbonInterval::seconds($rata2)->cascade()->forHumans();
 
 
